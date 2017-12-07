@@ -1,4 +1,5 @@
 from functools import partial
+import re
 
 class Features:
 
@@ -62,6 +63,7 @@ class Features:
             "word.is.bracket.close": Features.__is_bracket_close,
             "word.is.child.token": Features.__is_child_token,
             "word.is.ship": Features.__is_ship,
+            "word.is.year": Features.__is_year,
             "word.is.lower": str.islower,
             "word.is.title": str.istitle,
             "word.is.upper": str.isupper,
@@ -199,3 +201,18 @@ class Features:
         if dc == "wid" or dc == "widow":
             return True
         return False
+
+    @staticmethod
+    def __is_year(input):
+        dc = input.lower()
+        try:
+            num = int(dc)
+            return (1600 < num < 1980)
+        except:
+            return False
+
+    # @staticmethod
+    # def __is_preposition(input):
+    #     dc = input.lower()
+
+
