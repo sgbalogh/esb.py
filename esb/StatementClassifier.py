@@ -100,6 +100,6 @@ class StatementClassifier:
         if isinstance(record, list):
             return list(self.label(x) for x in record)
         else:
-            record.token_labels = self.predict_labeled_tokens(record.remarks_tokens())
-            record.is_parsed = True
+            record.statement_labels = self.predict_labeled_tokens(record.remarks_tokens())
+            record.has_labeled_statements = True
             return record

@@ -14,7 +14,7 @@ records[0].remarks()
 ## another which is used to label individual tokens. These are intended to be used one after another, and the
 ## predicted statement/theme labels are fed into the individual token model.
 
-## Train a CRF statemen/theme classifier
+## Train a CRF statement/theme classifier
 sc = esb.StatementClassifier.StatementClassifier()
 sc.load_training("./data/labels-training/esb_training_64.csv")
 sc.train()

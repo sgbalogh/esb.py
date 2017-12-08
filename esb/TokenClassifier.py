@@ -100,6 +100,9 @@ class TokenClassifier:
         if isinstance(record, list):
             return list(self.label(x) for x in record)
         else:
-            record.token_v2_labels = self.predict_labeled_tokens(list(zip(map(lambda x: x[0], record.remarks_tokens()), record.token_labels)))
-            record.is_parsed = True
-            return record
+            if (record.has_labeled_statements):
+                record.token_labels = self.predict_labeled_tokens(list(zip(map(lambda x: x[0], record.remarks_tokens()), record.statement_labels)))
+                record.has_labeled_tokens = True
+                return record
+            else:
+                return False
