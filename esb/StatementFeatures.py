@@ -1,12 +1,12 @@
 from functools import partial
 import re
 
-class Features:
+class StatementFeatures:
 
     @staticmethod
     def __emit_word_features(rel_pos, word):
         features = {}
-        for f in Features.__word_feature_functions().items():
+        for f in StatementFeatures.__word_feature_functions().items():
             features.update({str(rel_pos) + ":" + f[0]: f[1](word)})
         return features
 
@@ -15,10 +15,10 @@ class Features:
         features = {}
         for x in range(i - 3, i + 4):
             if 0 <= x < len(sentence):
-                features.update(Features.__emit_word_features(-(i - x), sentence[x][0]))
-                if Features.__word_within_open_brackets(sentence, x):
+                features.update(StatementFeatures.__emit_word_features(-(i - x), sentence[x][0]))
+                if StatementFeatures.__word_within_open_brackets(sentence, x):
                     features.update({'in-brackets': True})
-                if Features.__word_within_open_parens(sentence, x):
+                if StatementFeatures.__word_within_open_parens(sentence, x):
                     features.update({'in-parens': True})
         if i == 0:
             features.update({'BOS' : True})
@@ -49,41 +49,41 @@ class Features:
     @staticmethod
     def __word_feature_functions():
         return {
-            "word.contains.digit": Features.__contains_digit,
-            "word.is.delimiter": Features.__is_delimiter,
-            "word.is.start.token": Features.__is_start,
-            "word.is.end.token": Features.__is_end,
-            "word.is.parent.token": Features.__is_parent_token,
-            "word.is.is": Features.__is_is,
-            "word.is.relationship.token": Features.__is_relationship_token,
-            "word.is.wife.husband.token": Features.__is_wife_husband,
-            "word.is.father.mother.token": Features.__is_father_mother,
-            "word.is.brother.sister.token": Features.__is_brother_sister,
-            "word.is.bracket.open": Features.__is_bracket_open,
-            "word.is.bracket.close": Features.__is_bracket_close,
-            "word.is.child.token": Features.__is_child_token,
-            "word.is.ship": Features.__is_ship,
-            "word.is.year": Features.__is_year,
+            "word.contains.digit": StatementFeatures.__contains_digit,
+            "word.is.delimiter": StatementFeatures.__is_delimiter,
+            "word.is.start.token": StatementFeatures.__is_start,
+            "word.is.end.token": StatementFeatures.__is_end,
+            "word.is.parent.token": StatementFeatures.__is_parent_token,
+            "word.is.is": StatementFeatures.__is_is,
+            "word.is.relationship.token": StatementFeatures.__is_relationship_token,
+            "word.is.wife.husband.token": StatementFeatures.__is_wife_husband,
+            "word.is.father.mother.token": StatementFeatures.__is_father_mother,
+            "word.is.brother.sister.token": StatementFeatures.__is_brother_sister,
+            "word.is.bracket.open": StatementFeatures.__is_bracket_open,
+            "word.is.bracket.close": StatementFeatures.__is_bracket_close,
+            "word.is.child.token": StatementFeatures.__is_child_token,
+            "word.is.ship": StatementFeatures.__is_ship,
+            "word.is.year": StatementFeatures.__is_year,
             "word.is.lower": str.islower,
             "word.is.title": str.istitle,
             "word.is.upper": str.isupper,
-            "word.prefix.trigram" : partial(Features.__prefix, 3),
-            "word.prefix.bigram": partial(Features.__prefix, 2),
-            "word.suffix.trigram": partial(Features.__suffix, -3),
-            "word.suffix.bigram": partial(Features.__suffix, -2),
+            "word.prefix.trigram" : partial(StatementFeatures.__prefix, 3),
+            "word.prefix.bigram": partial(StatementFeatures.__prefix, 2),
+            "word.suffix.trigram": partial(StatementFeatures.__suffix, -3),
+            "word.suffix.bigram": partial(StatementFeatures.__suffix, -2),
         }
 
     @staticmethod
     def get_sentence_features(sentence):
-        return [Features.get_word_features(sentence, i) for i in range(len(sentence))]
+        return [StatementFeatures.get_word_features(sentence, i) for i in range(len(sentence))]
 
     @staticmethod
     def get_sentence_labels(sentence):
-        return [label for token, label in sentence]
+        return [statement_label for token, statement_label, token_label in sentence]
 
     @staticmethod
     def get_sentence_tokens(sentence):
-        return [token for token, label in sentence]
+        return [token for token, statement_label, token_label in sentence]
 
     @staticmethod
     def __contains_digit(input):

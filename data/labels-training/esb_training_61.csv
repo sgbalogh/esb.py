@@ -1,4 +1,4 @@
-training-example,training-instance-global,training-instance-local,token,label:level_1
+training-example,training-instance-global,training-instance-local,token,label:thematic
 0,0,0,START,START
 0,1,1,She,subj:native-of
 0,2,2,Nat,subj:native-of

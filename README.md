@@ -10,18 +10,23 @@ records = esb.Utils.Utils.auto_load()
 ## See the (unlabeled) original remarks field of a record
 records[0].remarks()
 
-## Train a CRF classifier
-classifier = esb.Classifier.Classifier()
-classifier.load_training("./data/labels-training/esb_training_64.csv")
-classifier.train()
+## The package contains two types of CRF models; one which is used to predict the general theme of a statement,
+## another which is used to label individual tokens. These are intended to be used one after another, and the
+## predicted statement/theme labels are fed into the individual token model.
 
-## Label a single record, and visualize the results
-classifier.label(records[0])
-records[0].print()
+## Train a CRF statemen/theme classifier
+sc = esb.StatementClassifier.StatementClassifier()
+sc.load_training("./data/labels-training/esb_training_64.csv")
+sc.train()
 
-## Gather a list of all predicted labels
-records[0].token_labels
+## Train a CRF individual-token classifier
+tc = esb.TokenClassifier.TokenClassifier()
+tc.load_training("./data/labels-training/esb_training_64_token_27.csv")
+tc.train()
+
+## Fully label a record entry, and print the result
+tc.label(sc.label(records[0])).print()
 
 ## Label first 1k records (will take a few moments)
-labeled_subset = list(map( lambda x: classifier.label(x), records[0:1000]))
+labeled_subset = list(map( lambda x: tc.label(sc.label(x)), records[0:1000]))
 ```

@@ -2,12 +2,12 @@ import csv
 import fileinput
 import json
 import sys
-from esb.Features import Features
+from esb.TokenFeatures import TokenFeatures
 from esb.Record import Record
 import sklearn_crfsuite
 from sklearn_crfsuite import metrics
 
-class Classifier:
+class TokenClassifier:
     def __init__ (self, training_data=None):
         self.training_set_labeled = []
         self.training_set_features = []
@@ -41,7 +41,7 @@ class Classifier:
                 else:
                     labeled_data.append(example)
                     example = []
-            example.append((row['token'], row['label:level_1']))
+            example.append((row['token'], row['label:thematic'], row['label:token']))
         labeled_data.append(example)
         return labeled_data
 
@@ -59,12 +59,12 @@ class Classifier:
         self.__process_validation_data()
 
     def __process_training_data(self):
-        self.training_set_features = [Features.get_sentence_features(s) for s in self.training_set_labeled]
-        self.training_set_labels = [Features.get_sentence_labels(s) for s in self.training_set_labeled]
+        self.training_set_features = [TokenFeatures.get_sentence_features(s) for s in self.training_set_labeled]
+        self.training_set_labels = [TokenFeatures.get_sentence_labels(s) for s in self.training_set_labeled]
 
     def __process_validation_data(self):
-        self.validation_set_features = [Features.get_sentence_features(s) for s in self.validation_set_labeled]
-        self.validation_set_labels = [Features.get_sentence_labels(s) for s in self.validation_set_labeled]
+        self.validation_set_features = [TokenFeatures.get_sentence_features(s) for s in self.validation_set_labeled]
+        self.validation_set_labels = [TokenFeatures.get_sentence_labels(s) for s in self.validation_set_labeled]
 
     def train(self):
         self.crf = sklearn_crfsuite.CRF(
@@ -93,13 +93,13 @@ class Classifier:
         ))
 
     def predict_labeled_tokens(self, labeled_tokens):
-        features_set = [Features.get_sentence_features(labeled_tokens)]
+        features_set = [TokenFeatures.get_sentence_features(labeled_tokens)]
         return self.crf.predict(features_set)[0]
 
     def label(self, record):
         if isinstance(record, list):
             return list(self.label(x) for x in record)
         else:
-            record.token_labels = self.predict_labeled_tokens(record.remarks_tokens())
+            record.token_v2_labels = self.predict_labeled_tokens(list(zip(map(lambda x: x[0], record.remarks_tokens()), record.token_labels)))
             record.is_parsed = True
             return record

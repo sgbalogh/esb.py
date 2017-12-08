@@ -5,6 +5,7 @@ class Record:
         self.row = row
         self.token_labels = None
         self.is_parsed = False
+        self.token_v2_labels = None
 
     def remarks(self):
         return self.row['Remarks']
@@ -18,4 +19,7 @@ class Record:
     def print(self):
         if self.token_labels is not None:
             for x in range(0,len(self.token_labels)):
-                print(self.token_labels[x],"\t",self.remarks_tokens()[x][0])
+                if (self.token_v2_labels != None):
+                    print(self.token_labels[x], "\t", self.remarks_tokens()[x][0], "\t", self.token_v2_labels[x])
+                else:
+                    print(self.token_labels[x],"\t",self.remarks_tokens()[x][0])
