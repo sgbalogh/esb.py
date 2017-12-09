@@ -5,7 +5,7 @@ class TokenFeatures:
     @staticmethod
     def __emit_word_features(rel_pos, word, statement_label):
         features = {}
-        features.update( {str(rel_pos) + ":" + statement_label: True })
+        features.update( {str(rel_pos) + ":" + statement_label: True }) ## This captures the prev. predicted statement label
         for f in Features.word_feature_functions().items():
             features.update({str(rel_pos) + ":" + f[0]: f[1](word)})
         return features

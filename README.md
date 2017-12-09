@@ -16,12 +16,12 @@ records[0].remarks()
 
 ## Train a CRF statement/theme classifier
 sc = esb.StatementClassifier.StatementClassifier()
-sc.load_training("./data/labels-training/esb_training_64.csv")
+sc.load_training("./data/labels-training/esb_training_full.csv")
 sc.train()
 
 ## Train a CRF individual-token classifier
 tc = esb.TokenClassifier.TokenClassifier()
-tc.load_training("./data/labels-training/esb_training_64_token_27.csv")
+tc.load_training("./data/labels-training/esb_training_full.csv")
 tc.train()
 
 ## Fully label a record entry, and print the result

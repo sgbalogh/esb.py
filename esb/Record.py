@@ -8,7 +8,6 @@ class Record:
         self.has_labeled_statements = False
         self.has_labeled_tokens = False
 
-
     def remarks(self):
         return self.row['Remarks']
 

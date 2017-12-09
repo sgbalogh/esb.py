@@ -2,6 +2,7 @@
 ## CRF models
 
 from functools import partial
+from esb.Dictionaries import Dictionaries
 
 class Features:
     @staticmethod
@@ -22,6 +23,8 @@ class Features:
             "word.is.child.token": Features.__is_child_token,
             "word.is.ship": Features.__is_ship,
             "word.is.year": Features.__is_year,
+            "word.is.month": Features.__is_month,
+            "word.is.common.location.name": Features.__is_common_location_name,
             "word.is.lower": str.islower,
             "word.is.title": str.istitle,
             "word.is.upper": str.isupper,
@@ -80,9 +83,7 @@ class Features:
     @staticmethod
     def __is_parent_token(input):
         dc = input.lower()
-        if dc == "par" or dc == "parent":
-            return True
-        return False
+        return dc in Dictionaries.parent_tokens()
 
     @staticmethod
     def __is_is(input):
@@ -106,37 +107,27 @@ class Features:
     @staticmethod
     def __is_relationship_token(input):
         dc = input.lower()
-        if dc in ["single", "married", "mar"]:
-            return True
-        return False
+        return dc in Dictionaries.relationship_tokens()
 
     @staticmethod
     def __is_wife_husband(input):
         dc = input.lower()
-        if dc in ["wife", "husband", "wf", "husb"]:
-            return True
-        return False
+        return dc in Dictionaries.spouse_tokens()
 
     @staticmethod
     def __is_father_mother(input):
         dc = input.lower()
-        if dc in ["father", "mother", "fa", "mo"]:
-            return True
-        return False
+        return dc in Dictionaries.mother_father_tokens()
 
     @staticmethod
     def __is_brother_sister(input):
         dc = input.lower()
-        if dc in ['bro', 'sis', 'brother', 'sister', 'brothers', 'sisters', 'bro', 'bros', 'sis', 'br']:
-            return True
-        return False
+        return dc in Dictionaries.brother_sister()
 
     @staticmethod
     def __is_child_token(input):
         dc = input.lower()
-        if dc in ['child', 'children', 'chld', 'ch', 'son', 'sons', 'daughter', 'daughters']:
-            return True
-        return False
+        return dc in Dictionaries.children()
 
     @staticmethod
     def __is_ship(input):
@@ -156,9 +147,7 @@ class Features:
     @staticmethod
     def __is_widow_token(input):
         dc = input.lower()
-        if dc == "wid" or dc == "widow":
-            return True
-        return False
+        return dc in Dictionaries.widow_tokens()
 
     @staticmethod
     def __is_year(input):
@@ -168,3 +157,13 @@ class Features:
             return ((1600 < num < 1980) or (0 <= num <= 99))
         except:
             return False
+
+    @staticmethod
+    def __is_month(input):
+        dc = input.lower()
+        return dc in Dictionaries.months()
+
+    @staticmethod
+    def __is_common_location_name(input):
+        dc = input.lower()
+        return dc in Dictionaries.common_locations()
