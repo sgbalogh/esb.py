@@ -21,7 +21,7 @@ class StatementClassifier:
         rows = []
         headers = []
         labeled_data = []
-        with open(path_to_csv, 'r') as csvfile:
+        with open(path_to_csv, 'r', encoding="utf-8") as csvfile:
             rdr = csv.reader(csvfile)
             index = -1
             for row in rdr:
@@ -29,14 +29,14 @@ class StatementClassifier:
                 if index == 0:
                     headers = row
                 elif index > 1:
-                    rows.append(dict(zip(headers,row)))
+                    rows.append(dict(zip(headers, row)))
         example_number = -1
         example = None
         for row in rows:
             sentence_number = int(row['training-example'])
             if sentence_number > example_number:
                 example_number = sentence_number
-                if example == None:
+                if example is None:
                     example = []
                 else:
                     labeled_data.append(example)
@@ -101,5 +101,4 @@ class StatementClassifier:
             return list(self.label(x) for x in record)
         else:
             record.statement_labels = self.predict_labeled_tokens(record.remarks_tokens())
-            record.has_labeled_statements = True
             return record

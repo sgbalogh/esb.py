@@ -27,9 +27,9 @@ class TokenFeatures:
         return features
 
     @staticmethod
-    def __word_within_open_brackets(sentence,i):
+    def __word_within_open_brackets(sentence, i):
         opened = False
-        for x in range(0,i):
+        for x in range(0, i):
             if sentence[x] == "[":
                 opened = True
             elif sentence[x] == "]":
@@ -37,9 +37,9 @@ class TokenFeatures:
         return opened
 
     @staticmethod
-    def __word_within_open_parens(sentence,i):
+    def __word_within_open_parens(sentence, i):
         opened = False
-        for x in range(0,i):
+        for x in range(0, i):
             if sentence[x] == "(":
                 opened = True
             elif sentence[x] == ")":

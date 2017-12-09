@@ -33,7 +33,7 @@ class Utils:
     def load_rows(path_to_csv):
         rows = []
         headers = []
-        with open(path_to_csv, 'r') as csvfile:
+        with open(path_to_csv, 'r', encoding="utf-8") as csvfile:
             rdr = csv.reader(csvfile)
             index = -1
             for row in rdr:

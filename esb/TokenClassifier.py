@@ -21,7 +21,7 @@ class TokenClassifier:
         rows = []
         headers = []
         labeled_data = []
-        with open(path_to_csv, 'r') as csvfile:
+        with open(path_to_csv, 'r', encoding='utf-8') as csvfile:
             rdr = csv.reader(csvfile)
             index = -1
             for row in rdr:
@@ -36,7 +36,7 @@ class TokenClassifier:
             sentence_number = int(row['training-example'])
             if sentence_number > example_number:
                 example_number = sentence_number
-                if example == None:
+                if example is None:
                     example = []
                 else:
                     labeled_data.append(example)
@@ -97,12 +97,63 @@ class TokenClassifier:
         return self.crf.predict(features_set)[0]
 
     def label(self, record):
+        labeled_record = None
+
         if isinstance(record, list):
-            return list(self.label(x) for x in record)
+            labeled_record = list(self.label(x) for x in record)
         else:
-            if (record.has_labeled_statements):
+            if record.statement_labels is not None:
                 record.token_labels = self.predict_labeled_tokens(list(zip(map(lambda x: x[0], record.remarks_tokens()), record.statement_labels)))
-                record.has_labeled_tokens = True
-                return record
+                labeled_record = record
+
+        if labeled_record is not None:
+            return self.concatenate_name_tokens(labeled_record)
+        else:
+            return False
+
+    @staticmethod
+    def concatenate_name_tokens(record):
+
+        size = len(record.remarks_tokens())
+
+        output_record = record
+        new_remarks_tokens = list()
+        new_statement_labels = list()
+        new_token_labels = list()
+
+        name_remark = None
+        current_token = None
+
+        for idx in range(len(record.remarks_tokens())):
+            label = record.token_labels[idx]
+            token = record.remarks_tokens()[idx]
+
+            if "NAME" in label:
+                if name_remark is None:
+                    # first remark label with name
+                    name_remark = list(token)
+                    current_token = label
+                else:
+                    # append to previous label
+                    name_remark[0] = name_remark[0] + ' ' + token[0]
+
+                if idx + 1 < size and current_token != record.token_labels[idx+1] or idx + 1 == size:
+                    new_remarks_tokens.append(tuple(name_remark))
+                    new_statement_labels.append(record.statement_labels[idx])
+                    new_token_labels.append(record.token_labels[idx])
+                    current_token = None
+                    name_remark = None
+
             else:
-                return False
+                new_remarks_tokens.append(token)
+                new_statement_labels.append(record.statement_labels[idx])
+                new_token_labels.append(record.token_labels[idx])
+
+        output_record.statement_labels = new_statement_labels
+        output_record.token_labels = new_token_labels
+        output_record.remarks_labels = new_remarks_tokens
+
+        return output_record
+
+
+

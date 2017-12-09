@@ -10,7 +10,7 @@ class StatementFeatures:
         return features
 
     @staticmethod
-    def get_word_features(sentence,i):
+    def get_word_features(sentence, i):
         features = {}
         for x in range(i - 3, i + 4):
             if 0 <= x < len(sentence):
@@ -26,9 +26,9 @@ class StatementFeatures:
         return features
 
     @staticmethod
-    def __word_within_open_brackets(sentence,i):
+    def __word_within_open_brackets(sentence, i):
         opened = False
-        for x in range(0,i):
+        for x in range(0, i):
             if sentence[x] == "[":
                 opened = True
             elif sentence[x] == "]":
@@ -36,9 +36,9 @@ class StatementFeatures:
         return opened
 
     @staticmethod
-    def __word_within_open_parens(sentence,i):
+    def __word_within_open_parens(sentence, i):
         opened = False
-        for x in range(0,i):
+        for x in range(0, i):
             if sentence[x] == "(":
                 opened = True
             elif sentence[x] == ")":
