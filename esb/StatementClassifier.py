@@ -54,8 +54,8 @@ class StatementClassifier:
         self.training_set_labeled = self.load_labeled_data(path_to_csv)
         self.__process_training_data()
 
-    def load_validation(self, path_to_csv, rows_to_ignore=0):
-        self.validation_set_labeled = self.load_labeled_data(path_to_csv, rows_to_ignore)
+    def load_validation(self, path_to_csv):
+        self.validation_set_labeled = self.load_labeled_data(path_to_csv)
         self.__process_validation_data()
 
     def __process_training_data(self):
