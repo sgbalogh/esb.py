@@ -7,3 +7,5 @@ from esb import TokenClassifier
 from esb import StatementFeatures
 from esb import TokenFeatures
 from esb import Features
+from esb import GeonamesEntity
+from esb import LocationNormalizer
