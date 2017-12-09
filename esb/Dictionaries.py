@@ -9,7 +9,7 @@ class Dictionaries:
     @staticmethod
     def common_locations():
         return ["ire", "ireland", "county", "ger", "germany", "lp", "london", "new", "york", "ny", "america", "us",
-                "hungary", "england", "liverpool", "poland", "france", "paris", "prussia", "county"]
+                "hungary", "england", "liverpool", "poland", "france", "paris", "prussia", "county", "jersey", "usa"]
 
     @staticmethod
     def brother_sister():
@@ -25,11 +25,11 @@ class Dictionaries:
 
     @staticmethod
     def spouse_tokens():
-        return ["wife", "husband", "wf", "husb"]
+        return ["wife", "husband", "wf", "husb", "hus"]
 
     @staticmethod
     def mother_father_tokens():
-        return ["father", "mother", "fa", "mo"]
+        return ["father", "mother", "fa", "mo", "fath", "moth"]
 
     @staticmethod
     def parent_tokens():
@@ -37,4 +37,4 @@ class Dictionaries:
 
     @staticmethod
     def widow_tokens():
-        return ["wid", "widow"]
+        return ["wid", "widow", "widowed", "widower"]
