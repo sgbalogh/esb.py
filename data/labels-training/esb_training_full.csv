@@ -1115,10 +1115,10 @@ training-example,training-instance-global,training-instance-local,token,label:th
 66,1113,10,-,delimiter:thematic,delimiter:thematic
 66,1114,11,His,fam:spouse,t:rel:HAS_WIFE
 66,1115,12,wife,fam:spouse,t:rel:HAS_WIFE
-66,1116,13,,fam:spouse,t:rel:HAS_WIFE
-66,1117,14,s,fam:spouse,t:rel:HAS_WIFE
-66,1118,15,name,fam:spouse,t:rel:HAS_WIFE
-66,1119,16,is,fam:spouse,t:rel:HAS_WIFE
+66,1116,13,,fam:spouse,t:UNKNOWN
+66,1117,14,s,fam:spouse,t:UNKNOWN
+66,1118,15,name,fam:spouse,t:UNKNOWN
+66,1119,16,is,fam:spouse,t:UNKNOWN
 66,1120,17,Bridget,fam:spouse,t:person:NAME
 66,1121,18,Phelan,fam:spouse,t:person:NAME
 66,1122,19,-,delimiter:thematic,delimiter:thematic
