@@ -35,6 +35,26 @@ class Features:
         }
 
     @staticmethod
+    def word_within_open_brackets(sentence, i):
+        opened = False
+        for x in range(0, i):
+            if sentence[x] == "[":
+                opened = True
+            elif sentence[x] == "]":
+                opened = False
+        return opened
+
+    @staticmethod
+    def word_within_open_parens(sentence, i):
+        opened = False
+        for x in range(0, i):
+            if sentence[x] == "(":
+                opened = True
+            elif sentence[x] == ")":
+                opened = False
+        return opened
+
+    @staticmethod
     def get_sentence_features(sentence):
         return [Features.get_word_features(sentence, i) for i in range(len(sentence))]
 

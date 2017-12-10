@@ -13,38 +13,21 @@ class TokenFeatures:
     @staticmethod
     def get_word_features(sentence,i):
         features = {}
-        for x in range(i - 3, i + 4):
+        i_statement_label = sentence[i][1]
+        for x in range(i - 4, i + 5):
             if 0 <= x < len(sentence):
+                rel_pos_str = str(-(i - x))
                 features.update(TokenFeatures.__emit_word_features(-(i - x), sentence[x][0], sentence[x][1]))
-                if TokenFeatures.__word_within_open_brackets(sentence, x):
-                    features.update({'in-brackets': True})
-                if TokenFeatures.__word_within_open_parens(sentence, x):
-                    features.update({'in-parens': True})
+                features.update({ rel_pos_str + ':same-statement-label': i_statement_label == sentence[x][1]})
+                if Features.word_within_open_brackets(sentence, x):
+                    features.update({rel_pos_str + ':in-brackets': True})
+                if Features.word_within_open_parens(sentence, x):
+                    features.update({rel_pos_str + ':in-parens': True})
         if i == 0:
             features.update({'BOS' : True})
         if i == len(sentence) - 1:
             features.update({'EOS': True})
         return features
-
-    @staticmethod
-    def __word_within_open_brackets(sentence, i):
-        opened = False
-        for x in range(0, i):
-            if sentence[x] == "[":
-                opened = True
-            elif sentence[x] == "]":
-                opened = False
-        return opened
-
-    @staticmethod
-    def __word_within_open_parens(sentence, i):
-        opened = False
-        for x in range(0, i):
-            if sentence[x] == "(":
-                opened = True
-            elif sentence[x] == ")":
-                opened = False
-        return opened
 
     @staticmethod
     def get_sentence_features(sentence):
