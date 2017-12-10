@@ -4,6 +4,7 @@ import json
 import sys
 from esb.TokenFeatures import TokenFeatures
 from esb.Record import Record
+from esb.Tags import Tags
 import sklearn_crfsuite
 from sklearn_crfsuite import metrics
 
@@ -107,42 +108,47 @@ class TokenClassifier:
                 labeled_record = record
 
         if labeled_record is not None:
-            return self.concatenate_name_tokens(labeled_record)
+            # list of token tags to concatenate
+            concat_token_tags = [Tags.Token.LOCATION_NAME, Tags.Token.WORK_EMPLOYER_NAME, Tags.Token.PERSON_NAME,
+                                 Tags.Token.REL_IS_NATIVE_OF, Tags.Token.META_PARENTHETICAL]
+
+            return self.concatenate_tokens_by_tags(labeled_record, concat_token_tags)
         else:
             return False
 
     @staticmethod
-    def concatenate_name_tokens(record):
+    def concatenate_tokens_by_tags(record, tags):
 
         size = len(record.remarks_tokens())
 
         output_record = record
+
         new_remarks_tokens = list()
         new_statement_labels = list()
         new_token_labels = list()
 
-        name_remark = None
-        current_token = None
+        current_remark = None
+        current_token_tag = None
 
         for idx in range(len(record.remarks_tokens())):
             label = record.token_labels[idx]
             token = record.remarks_tokens()[idx]
 
-            if "NAME" in label:
-                if name_remark is None:
+            if label in tags:
+                if current_remark is None:
                     # first remark label with name
-                    name_remark = list(token)
-                    current_token = label
+                    current_remark = list(token)
+                    current_token_tag = label
                 else:
                     # append to previous label
-                    name_remark[0] = name_remark[0] + ' ' + token[0]
+                    current_remark[0] = current_remark[0] + ' ' + token[0]
 
-                if idx + 1 < size and current_token != record.token_labels[idx+1] or idx + 1 == size:
-                    new_remarks_tokens.append(tuple(name_remark))
+                if idx + 1 < size and current_token_tag != record.token_labels[idx+1] or idx + 1 == size:
+                    new_remarks_tokens.append(tuple(current_remark))
                     new_statement_labels.append(record.statement_labels[idx])
                     new_token_labels.append(record.token_labels[idx])
-                    current_token = None
-                    name_remark = None
+                    current_token_tag = None
+                    current_remark = None
 
             else:
                 new_remarks_tokens.append(token)
@@ -154,6 +160,5 @@ class TokenClassifier:
         output_record.remarks_labels = new_remarks_tokens
 
         return output_record
-
 
 
