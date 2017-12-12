@@ -45,7 +45,6 @@ class Tags:
         META_SEE = "t:meta:SEE"
         META_PARENTHETICAL = "meta:parenthetical"
 
-
         PERSON_AGE = "t:person:AGE"
         PERSON_AGE_YEAR = "t:person:AGE_YEAR"
         PERSON_BROTHERS = "t:person:BROTHERS"
