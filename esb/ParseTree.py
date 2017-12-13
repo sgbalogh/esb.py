@@ -4,25 +4,23 @@
 
 
 class TreeNode(object):
-    def __init__(self, val):
-        self._value = val
-        self._children = [] # tuple (value, edge)
 
-    @property
-    def value(self):
-        return self._value
+    def __init__(self, label, token=None):
+        self.label = label
+        self.token = token
+        self.children = [] # tuple (value, edge)
 
-    @property
-    def children(self):
-        return self._children
-
-    @children.setter
-    def children(self, child, label):
-        self._children.append((child, TreeEdge(label, self, child)))
+    def __str__(self):
+        return '[{}, {}]'.format(self.label, self.token)
 
 
-class TreeEdge(object):
-    def __init__(self, attribute=None, start_node=None, end_node=None):
-        self._attribute = attribute
-        self._start_node = start_node
-        self._end_node = end_node
+    @staticmethod
+    def preorder_print(node):
+        if node is None:
+            return
+
+        print('{}'.format(node))
+
+        for child in node.children:
+            TreeNode.preorder_print(child)
+

@@ -1,5 +1,6 @@
 from esb.Tags import Tags
 from esb.Stack import Stack
+from esb.ParseTree import *
 from copy import copy
 
 # list of linkedlist heads
@@ -127,22 +128,30 @@ class Rules:
         return -1, None
 
     @staticmethod
-    def brute_force(rules, tokens):
-        if len(tokens) == 0:
+    def brute_force(rules, labels, nodes):
+        if len(labels) == 0:
             return
 
-        output = copy(tokens)
+        output_labels = copy(labels)
+        output_nodes = copy(nodes)
 
-        for idx in range(len(output)-1, -1, -1):
-            current_label = output[idx]
-            print(current_label)
+        for idx in range(len(output_labels)-1, -1, -1):
+            current_label = output_labels[idx]
 
-            next_idx, matched_rule = Rules.check_match_rule(rules, output, idx)
+            next_idx, matched_rule = Rules.check_match_rule(rules, output_labels, idx)
 
             if matched_rule is not None:
-                output = output[:idx] + [matched_rule.name] + output[next_idx:]
 
-        return output
+                parent_node = TreeNode(matched_rule.name)
+
+                # add child nodes to current node
+                for node_idx in range(idx, next_idx):
+                    parent_node.children.append(output_nodes[node_idx])
+
+                output_labels = output_labels[:idx] + [matched_rule.name] + output_labels[next_idx:]
+                output_nodes = output_nodes[:idx] + [parent_node] + output_nodes[next_idx:]
+
+        return output_labels, output_nodes
 
 
 

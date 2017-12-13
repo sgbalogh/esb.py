@@ -35,6 +35,7 @@ def main():
     labeled_subset = list(map(lambda x: tc.label(sc.label(x)), records[0:50]))
 
     siblings_subset = list()
+    siblings_subset_roots = list()
 
     for record_idx in range(len(labeled_subset)):
         record = labeled_subset[record_idx]
@@ -51,9 +52,6 @@ def main():
         if len(siblings_tokens) > 0:
             siblings_subset.append(siblings_tokens)
 
-
-    # shift-reduce algorithm
-    stack = Stack()
     first_rule, siblings_rules = Rules.get_siblings_rules()
 
     for idx in range(len(siblings_subset)):
@@ -63,31 +61,25 @@ def main():
         labels = [str(idx[0]) for idx in record]
         labels_length = len(labels)
 
+        nodes = list()
+
+        for label, token in record:
+            nodes.append(TreeNode(label, token))
+
         while True:
-            labels = Rules.brute_force(siblings_rules, labels)
+            labels, nodes = Rules.brute_force(siblings_rules, labels, nodes)
 
             if labels_length == len(labels):
+                # add the rest of the unattached nodes to root
+                for node in nodes:
+                    root.children.append(node)
                 break
             else:
                 labels_length = len(labels)
 
-        # for record_idx in range(len(record)):
-        #     label, token = record[record_idx]
-        #
-        # for label, token in record:
-            # stack.push(label)
-            # print(label, token)
-
-            # TODO: if next token is a terminal or zero_or_more, push it out as well
-            # stack, record = Rules.shift_reduce(siblings_rules, first_rule, stack, record, record_idx)
-
-            # matched_rules = Rules.get_matched_rules(siblings_rules, stack)
-
-            # if more than one matched rule, take the longest one
-            # if len(matched_rules) > 0:
-            #     rule = max(matched_rules, key=len)
-            #
-                # update stack with rule
+        siblings_subset_roots.append(root)
+        print('-------------------------')
+        TreeNode.preorder_print(root)
 
 
 
