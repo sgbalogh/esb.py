@@ -110,7 +110,15 @@ class TokenClassifier:
         if labeled_record is not None:
             # list of token tags to concatenate
             concat_token_tags = [Tags.Token.LOCATION_NAME, Tags.Token.WORK_EMPLOYER_NAME, Tags.Token.PERSON_NAME,
-                                 Tags.Token.REL_IS_NATIVE_OF, Tags.Token.META_PARENTHETICAL]
+                                 Tags.Token.REL_IS_NATIVE_OF, Tags.Token.META_PARENTHETICAL,
+                                 Tags.Token.EMIGRATION_VESSEL, Tags.Token.TIME_MONTH, Tags.Token.EMIGRATION_VIA,
+                                 Tags.Token.REL_HAS_SPOUSE, Tags.Token.UNKNOWN, Tags.Token.REL_IS_WIDOW_OF,
+                                 Tags.Token.REL_HAS_HUSBAND, Tags.Token.REL_HAS_WIFE, Tags.Token.PERSON_IS_WIDOWED,
+                                 Tags.Token.META_NO_REMARKS, Tags.Token.META_IS_SAME_AS, Tags.Token.PERSON_AGE,
+                                 Tags.Token.PERSON_IS_SINGLE, Tags.Token.WORK_OCCUPATION, Tags.Token.WORK_WORKS_FOR,
+                                 Tags.Token.RESIDENTIAL_LIVED_WITH, Tags.Token.RESIDENTIAL_LIVES_WITH,
+                                 Tags.Token.RESIDENTIAL_FORMERLY_LOCATED_AT, Tags.Token.RESIDENTIAL_CURRENTLY_LIVING_AT,
+                                 Tags.Token.META_ACCOUNT_CLOSED]
 
             return self.concatenate_tokens_by_tags(labeled_record, concat_token_tags)
         else:

@@ -6,7 +6,7 @@ class TreeNode(object):
     def __init__(self, label, token=None):
         self.label = label
         self.token = token
-        self.children = [] # tuple (value, edge)
+        self.children = []
 
     def __str__(self):
         return '[{}, {}]'.format(self.label, self.token)

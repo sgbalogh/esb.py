@@ -48,10 +48,9 @@ class Rule:
 
 # linkedlist node
 class RuleNode(object):
-    def __init__(self, val=None, prev=None, next=None, zero_or_one=False, zero_or_more=False, is_end=False):
+    def __init__(self, val=None, next=None, zero_or_one=False, zero_or_more=False, is_end=False):
         self.value = val
         self.next = next
-        self.prev = prev
         self.zero_or_one = zero_or_one
         self.zero_or_more = zero_or_more
         self.is_end = is_end
@@ -61,6 +60,7 @@ class RuleNode(object):
 
 
 class Rules:
+    ignored_tags = [Tags.Token.START, Tags.Token.END]
 
     @staticmethod
     def get_siblings_rules():
@@ -70,38 +70,30 @@ class Rules:
         r.add_rule([Tags.Token.PERSON_NUMBER, "siblings_type", "siblings_name", "siblings_start*"])
 
         r2 = Rule('siblings_type')
-        r2.add_rule([Tags.Token.PERSON_BROTHERS, "delimiter?"])
-        r2.add_rule([Tags.Token.PERSON_SISTERS, "delimiter?"])
+        r2.add_rule([Tags.Token.PERSON_BROTHERS, Tags.Token.DELIMITER+"?"])
+        r2.add_rule([Tags.Token.PERSON_SISTERS,  Tags.Token.DELIMITER+"?"])
 
         r3 = Rule('siblings_name')
-        r3.add_rule([Tags.Token.PERSON_NAME, "siblings_meta?", "siblings_location?", "delimiter?", "siblings_name*"])
+        r3.add_rule([Tags.Token.PERSON_NAME, Tags.Token.META_PARENTHETICAL+"?", "siblings_location?", Tags.Token.DELIMITER+"?",
+                     "siblings_name*"])
 
         r4 = Rule('siblings_location')
         r4.add_rule([Tags.Token.PERSON_LOCATED_IN, Tags.Token.LOCATION_NAME])
-
-        r5 = Rule('delimiter')
-        r5.add_rule([Tags.Token.DELIMITER])
-
-        r6 = Rule('siblings_meta')
-        r6.add_rule([Tags.Token.META_PARENTHETICAL])
 
         rules.append(r)
         rules.append(r2)
         rules.append(r3)
         rules.append(r4)
-        rules.append(r5)
-        rules.append(r6)
 
         return rules
-
 
     @staticmethod
     def get_parent_rules():
         rules = []
 
         r = Rule('parent_start', is_first=True)
-        r.add_rule(["parent_type", "parent_status?", "parent_location?", Tags.Token.PERSON_NAME+'?', 'delimiter?',
-                    'parent_start*'])
+        r.add_rule(["parent_type", "parent_status?", "parent_location?", Tags.Token.PERSON_NAME+'?',
+                    Tags.Token.DELIMITER+'?', 'parent_start*'])
 
         r2 = Rule('parent_type')
         r2.add_rule([Tags.Token.PERSON_FATHER])
@@ -115,8 +107,73 @@ class Rules:
         r4.add_rule([Tags.Token.PERSON_IS_DEAD])
         r4.add_rule([Tags.Token.PERSON_IS_LIVING])
 
-        r5 = Rule('delimiter')
-        r5.add_rule([Tags.Token.DELIMITER])
+        rules.append(r)
+        rules.append(r2)
+        rules.append(r3)
+        rules.append(r4)
+
+        return rules
+
+    @staticmethod
+    def get_emigration_rules():
+        rules = []
+
+        r = Rule('emigration_start', is_first=True)
+        r.add_rule([Tags.Token.EMIGRATION_ARRIVED, Tags.Token.LOCATION_NAME+'?', 'emigration_date?',
+                    Tags.Token.EMIGRATION_VIA, 'emigration_vessel'])
+
+        r2 = Rule('emigration_date')
+        r2.add_rule([Tags.Token.TIME_MONTH, Tags.Token.TIME_YEAR, Tags.Token.DELIMITER+'?'])
+        r2.add_rule([Tags.Token.TIME_MONTH, Tags.Token.TIME_DATE, Tags.Token.DELIMITER+'?'])
+
+        r3 = Rule('emigration_vessel')
+        r3.add_rule([Tags.Token.EMIGRATION_VESSEL, Tags.Token.EMIGRATION_VESSEL_HAS_ORIGIN+'?',
+                     Tags.Token.LOCATION_NAME])
+
+        rules.append(r)
+        rules.append(r2)
+        rules.append(r3)
+
+        return rules
+
+    @staticmethod
+    def get_children_rules():
+        rules = []
+
+        r = Rule('children_start', is_first=True)
+        r.add_rule([Tags.Token.PERSON_NUMBER, Tags.Token.PERSON_CHILDREN, Tags.Token.DELIMITER+'?', 'children_name*'])
+
+        r2 = Rule('children_name')
+        r2.add_rule([Tags.Token.PERSON_NAME, Tags.Token.DELIMITER+'?'])
+
+        rules.append(r)
+        rules.append(r2)
+
+        return rules
+
+    @staticmethod
+    def get_spouse_rules():
+        rules = []
+
+        r = Rule('spouse_start', is_first=True)
+        r.add_rule(['spouse_relation', Tags.Token.DELIMITER+'?', 'spouse_person*',
+                    'spouse_start*'])
+
+        r2 = Rule('spouse_person')
+        r2.add_rule([Tags.Token.PERSON_NAME, Tags.Token.PERSON_IS_DEAD+'?', 'spouse_duration?', 'spouse_location?',
+                     Tags.Token.DELIMITER+'?'])
+
+        r3 = Rule('spouse_relation')
+        r3.add_rule([Tags.Token.REL_HAS_HUSBAND])
+        r3.add_rule([Tags.Token.REL_HAS_WIFE])
+        r3.add_rule([Tags.Token.REL_HAS_SPOUSE])
+        r3.add_rule([Tags.Token.REL_IS_WIDOW_OF])
+
+        r4 = Rule('spouse_location')
+        r4.add_rule([Tags.Token.PERSON_LOCATED_IN, Tags.Token.LOCATION_NAME])
+
+        r5 = Rule('spouse_duration')
+        r5.add_rule([Tags.Token.TIME_YEAR, Tags.Token.TIME_DURATION_YEAR])
 
         rules.append(r)
         rules.append(r2)
@@ -126,9 +183,139 @@ class Rules:
 
         return rules
 
+    @staticmethod
+    def get_record_ref_rules():
+        rules = []
+
+        r = Rule('ref_start', is_first=True)
+        r.add_rule([Tags.Token.META_SEE, 'ref_account*', 'ref_start*'])
+        r.add_rule([Tags.Token.META_IS_SAME_AS, 'ref_account*', 'ref_start*'])
+
+        r2 = Rule('ref_account')
+        r2.add_rule([Tags.Token.META_ACCOUNT_NUMBER, Tags.Token.DELIMITER+'?'])
+
+        rules.append(r)
+        rules.append(r2)
+
+        return rules
 
     @staticmethod
-    def check_match_rule(rules, tokens, start_idx): # return <next index after last matching character, rule_name> or -1 if nothing
+    def get_age_rules():
+        r = Rule('age_start', is_first=True)
+        r.add_rule([Tags.Token.PERSON_AGE_YEAR, Tags.Token.PERSON_AGE])
+
+        return [r]
+
+    @staticmethod
+    def get_bio_rules():
+        r = Rule('bio_start', is_first=True)
+        r.add_rule([Tags.Token.TIME_DURATION_VALUE, Tags.Token.TIME_DURATION_YEAR, Tags.Token.PERSON_LOCATED_IN,
+                    Tags.Token.LOCATION_NAME])
+
+        return [r]
+
+    @staticmethod
+    def get_marital_rules():
+        r = Rule('marital_start', is_first=True)
+        r.add_rule([Tags.Token.PERSON_IS_SINGLE])
+
+        return [r]
+
+    @staticmethod
+    def get_native_of_rules():
+        rules = []
+
+        r = Rule('native_of_start', is_first=True)
+        r.add_rule([Tags.Token.REL_IS_NATIVE_OF, Tags.Token.LOCATION_NAME, Tags.Token.DELIMITER+'?', 'native_of_dist?',
+                    'native_of_start*'])
+
+        r2 = Rule('native_of_dist')
+        r2.add_rule([Tags.Token.LOCATION_DISTANCE, Tags.Token.LOCATION_DISTANCE_UNIT+'?', Tags.Token.LOCATION_FROM,
+                     Tags.Token.LOCATION_NAME])
+
+        rules.append(r)
+        rules.append(r2)
+
+        return rules
+
+    @staticmethod
+    def get_occupation_rules():
+        r = Rule('occupation_start', is_first=True)
+        r.add_rule([Tags.Token.WORK_WORKS_FOR, Tags.Token.WORK_EMPLOYER_NAME])
+        r.add_rule([Tags.Token.WORK_OCCUPATION])
+
+        return [r]
+
+    @staticmethod
+    def get_residential_rules():
+        r = Rule('residential_start', is_first=True)
+        r.add_rule([Tags.Token.RESIDENTIAL_LIVES_WITH, 'residential_person*', 'residential_start*'])
+        r.add_rule([Tags.Token.RESIDENTIAL_LIVED_WITH, 'residential_person*', 'residential_start*'])
+        r.add_rule([Tags.Token.RESIDENTIAL_CURRENTLY_LIVING_AT, Tags.Token.DELIMITER+'?', 'residential_location',
+                    'residential_person*', 'residential_start*'])
+        r.add_rule([Tags.Token.RESIDENTIAL_FORMERLY_LOCATED_AT, Tags.Token.DELIMITER+'?', 'residential_location',
+                    'residential_person*', 'residential_start*'])
+
+        r2 = Rule('residential_person')
+        r2.add_rule([Tags.Token.PERSON_NAME, Tags.Token.DELIMITER+'?'])
+        r2.add_rule([Tags.Token.PERSON_SON, Tags.Token.DELIMITER+'?'])
+        r2.add_rule([Tags.Token.PERSON_MOTHER, Tags.Token.DELIMITER+'?'])
+        r2.add_rule([Tags.Token.PERSON_FATHER, Tags.Token.DELIMITER+'?'])
+        r2.add_rule([Tags.Token.PERSON_BROTHERS, Tags.Token.DELIMITER+'?'])
+        r2.add_rule([Tags.Token.PERSON_SISTERS, Tags.Token.DELIMITER+'?'])
+        r2.add_rule([Tags.Token.PERSON_WIFE, Tags.Token.DELIMITER+'?'])
+        r2.add_rule([Tags.Token.PERSON_CHILDREN, Tags.Token.DELIMITER+'?'])
+
+        r3 = Rule('residential_location')
+        r3.add_rule([Tags.Token.LOCATION_NAME, Tags.Token.DELIMITER+'?'])
+
+        return [r, r2, r3]
+
+    @staticmethod
+    def get_rules_by_tag(tag):
+
+        if tag == Tags.Thematic.FAM_SIBLINGS:
+            return Rules.get_siblings_rules()
+
+        elif tag == Tags.Thematic.FAM_PARENTS:
+            return Rules.get_parent_rules()
+
+        elif tag == Tags.Thematic.SUBJ_EMIGRATION:
+            return Rules.get_emigration_rules()
+
+        elif tag == Tags.Thematic.FAM_CHILDREN:
+            return Rules.get_children_rules()
+
+        elif tag == Tags.Thematic.FAM_SPOUSE:
+            return Rules.get_spouse_rules()
+
+        elif tag == Tags.Thematic.META_RECORD:
+            return Rules.get_record_ref_rules()
+
+        elif tag == Tags.Thematic.SUBJ_AGE:
+            return Rules.get_age_rules()
+
+        elif tag == Tags.Thematic.SUBJ_BIO:
+            return Rules.get_bio_rules()
+
+        elif tag == Tags.Thematic.SUBJ_MARTIAL:
+            return Rules.get_marital_rules()
+
+        elif tag == Tags.Thematic.SUBJ_NATIVEOF:
+            return Rules.get_native_of_rules()
+
+        elif tag == Tags.Thematic.SUBJ_OCCUPATION:
+            return Rules.get_occupation_rules()
+
+        elif tag == Tags.Thematic.SUBJ_RESIDENCE:
+            return Rules.get_residential_rules()
+
+        else:
+            return []
+
+    @staticmethod
+    # return <next index after last matching character, rule_name> or -1 if nothing
+    def check_match_rule(rules, tokens, start_idx):
         if len(tokens) == 0:
             return -1, None
 
@@ -158,11 +345,20 @@ class Rules:
 
                     # if rule node and token are matched, continue to match
                     if node.value == tokens[idx]:
-                        node = node.next
-                        idx += 1
 
-                    elif node.is_end:
+                        if node.zero_or_more:
+                            # matches multiple of same node if zero_or_more
+                            while idx < len(tokens) and node.value == tokens[idx]:
+                                idx += 1
+
+                        else:
+                            idx += 1
+
                         node = node.next
+
+                    elif node.zero_or_one or node.zero_or_more: # skip if allow zero of this node
+                        node = node.next
+
                     else:
                         break
 
@@ -173,17 +369,17 @@ class Rules:
         return -1, None
 
     @staticmethod
-    def brute_force(rules, labels, nodes):
-        if len(labels) == 0:
+    def parse_tree_by_label(rules, tokens, remarks, nodes):
+        if len(tokens) == 0 or len(remarks) == 0:
             return
 
-        output_labels = copy(labels)
+        output_tokens = copy(tokens)
+        output_remarks = copy(remarks)
         output_nodes = copy(nodes)
 
-        for idx in range(len(output_labels)-1, -1, -1):
+        for idx in range(len(output_tokens)-1, -1, -1):
 
-            print(output_labels[idx])
-            next_idx, matched_rule = Rules.check_match_rule(rules, output_labels, idx)
+            next_idx, matched_rule = Rules.check_match_rule(rules, output_tokens, idx)
 
             if matched_rule is not None:
 
@@ -193,10 +389,11 @@ class Rules:
                 for node_idx in range(idx, next_idx):
                     parent_node.children.append(output_nodes[node_idx])
 
-                output_labels = output_labels[:idx] + [matched_rule.name] + output_labels[next_idx:]
+                output_tokens = output_tokens[:idx] + [matched_rule.name] + output_tokens[next_idx:]
+                output_remarks = output_remarks[:idx] + ['N/A'] + output_remarks[next_idx:]
                 output_nodes = output_nodes[:idx] + [parent_node] + output_nodes[next_idx:]
 
-        return output_labels, output_nodes
+        return output_tokens, output_remarks, output_nodes
 
 
 
