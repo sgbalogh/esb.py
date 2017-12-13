@@ -27,7 +27,7 @@ class Tags:
     class Token:
         END = "END"
         START = "START"
-        DELIMITER = "delimiter:thematic"
+        DELIMITER = "t:DELIMITER"
         EMIGRATION_ARRIVED = "t:emigration:ARRIVED"
         EMIGRATION_VESSEL = "t:emigration:VESSEL"
         EMIGRATION_VESSEL_HAS_ORIGIN = "t:emigration:VESSEL_HAS_ORIGIN"

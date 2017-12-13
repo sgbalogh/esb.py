@@ -60,12 +60,26 @@ def main():
         record = siblings_subset[idx]
         root = TreeNode(Tags.Thematic.FAM_SIBLINGS)
 
-        for label, token in record:
-            stack.push(label)
-            print(label, token)
+        labels = [str(idx[0]) for idx in record]
+        labels_length = len(labels)
 
-            #TODO: if next token is a terminal or zero_or_more, push it out as well
-            stack = Rules.shift_reduce(siblings_rules, first_rule, stack)
+        while True:
+            labels = Rules.brute_force(siblings_rules, labels)
+
+            if labels_length == len(labels):
+                break
+            else:
+                labels_length = len(labels)
+
+        # for record_idx in range(len(record)):
+        #     label, token = record[record_idx]
+        #
+        # for label, token in record:
+            # stack.push(label)
+            # print(label, token)
+
+            # TODO: if next token is a terminal or zero_or_more, push it out as well
+            # stack, record = Rules.shift_reduce(siblings_rules, first_rule, stack, record, record_idx)
 
             # matched_rules = Rules.get_matched_rules(siblings_rules, stack)
 

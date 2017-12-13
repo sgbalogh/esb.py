@@ -1,5 +1,6 @@
 from esb.Tags import Tags
 from esb.Stack import Stack
+from copy import copy
 
 # list of linkedlist heads
 class Rule:
@@ -9,6 +10,7 @@ class Rule:
         self.is_first = is_first
 
     def add_rule(self, rule_strings):
+
         head = RuleNode('start')
         current = head
 
@@ -28,8 +30,11 @@ class Rule:
 
             stack.push(rule_node)
 
+
+
         # push every rule into stack
         while not stack.is_empty():
+            # change to next node
             current.next = stack.pop()
             current = current.next
 
@@ -40,9 +45,10 @@ class Rule:
 
 # linkedlist node
 class RuleNode(object):
-    def __init__(self, val=None, next=None, zero_or_more=False, is_end=False):
+    def __init__(self, val=None, prev=None, next=None, zero_or_more=False, is_end=False):
         self.value = val
         self.next = next
+        self.prev = prev
         self.zero_or_more = zero_or_more
         self.is_end = is_end
 
@@ -70,8 +76,7 @@ class Rules:
         r4.add_rule([Tags.Token.PERSON_LOCATED_IN, Tags.Token.LOCATION_NAME])
 
         r5 = Rule('delimiter')
-        r5.add_rule([","])
-        r5.add_rule(["&"])
+        r5.add_rule([Tags.Token.DELIMITER])
 
         r6 = Rule('siblings_meta')
         r6.add_rule([Tags.Token.META_PARENTHETICAL])
@@ -86,47 +91,58 @@ class Rules:
         return r, rules
 
 
+    @staticmethod
+    def check_match_rule(rules, tokens, start_idx): # return <next index after last matching character, rule_name> or -1 if nothing
+        if len(tokens) == 0:
+            return -1, None
+
+        # check every rule
+        for rule in rules:
+
+            # check every starting node in this rule
+            for node in rule.start_nodes:
+
+                if node.value != tokens[start_idx]:
+                    continue
+
+                start_node = node
+                idx = start_idx
+
+                while idx < len(tokens) and node is not None:
+
+                    # if rule node and token are matched, continue to match
+                    if node.value == tokens[idx]:
+                        node = node.next
+                        idx += 1
+
+                    elif node.is_end:
+                        node = node.next
+                    else:
+                        break
+
+                # if it reached end of loop or found matching before end of string
+                if (node is None or node.is_end) and start_node.value == tokens[start_idx]:
+                    return idx, rule
+
+        return -1, None
 
     @staticmethod
-    def shift_reduce(rules, start_rule, src_stack):
-        if src_stack.size() == 0:
+    def brute_force(rules, tokens):
+        if len(tokens) == 0:
             return
 
-        stack = src_stack.clone()
+        output = copy(tokens)
 
-        for rule in rules:
-            if rule == start_rule: # skip first_rule. only used for final check
-                continue
+        for idx in range(len(output)-1, -1, -1):
+            current_label = output[idx]
+            print(current_label)
 
-            # TODO: check first element of each rule, see if anyone of them match. If the element is another rule_name, recursive this.
-            for node in rule.start_nodes:
-                # check if rule is matched with string
-                if node.value == stack.peek() and node.is_end:
-                    _ = stack.pop()
-                    stack.push(rule.name)
+            next_idx, matched_rule = Rules.check_match_rule(rules, output, idx)
 
+            if matched_rule is not None:
+                output = output[:idx] + [matched_rule.name] + output[next_idx:]
 
-        # TODO: match with first_rule_name
-        nodes = stack.items
-
-        for starting_node in start_rule.start_nodes:
-            idx = 0
-            current = starting_node
-
-            while current is not None and idx < len(nodes):
-                if current.value != nodes[idx] and not current.zero_or_more:
-                    break
-
-                current = current.next
-                idx += 1
-
-            if current is None and idx == len(nodes):
-                stack.clear()
-                stack.push(start_rule)
-
-
-        return stack
-
+        return output
 
 
 
