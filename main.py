@@ -34,18 +34,23 @@ def main():
     # labeled_subset = list(map(lambda x: tc.label(sc.label(x)), records[0:1000]))
     labeled_subset = list(map(lambda x: tc.label(sc.label(x)), records[0:50]))
 
-    subset_with_tag = get_specific_tag_records(labeled_subset, Tags.Thematic.FAM_SIBLINGS)
+    subset_with_tag = get_specific_tag_records(labeled_subset, Tags.Thematic.FAM_PARENTS)
 
     # handling for a specific label
-    first_rule, siblings_rules = Rules.get_siblings_rules()
+    # rules = Rules.get_siblings_rules()
+    rules = Rules.get_parent_rules()
 
     for idx in range(len(subset_with_tag)):
         record = subset_with_tag[idx]
-        root = get_root_from_parse_tree(record, Tags.Thematic.FAM_SIBLINGS, siblings_rules)
+        root = get_root_from_parse_tree(record, Tags.Thematic.FAM_PARENTS, rules)
         print('-------------------------')
         TreeNode.preorder_print(root)
 
     print("PAUSE")
+
+
+#TODO: siblings tag - add owner's last name into them
+#TODO: use hashmap to store entity nodes [name, node]
 
 # return the root of parsed tree for a specific tag
 def get_root_from_parse_tree(record, tag_name, rules):

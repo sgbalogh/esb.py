@@ -20,17 +20,19 @@ class Rule:
 
         # starting from last element of string to first
         for rule_string in reversed(rule_strings):
-            zero_or_more = (rule_string[-1] == '*')
-            rule_name = rule_string[:-1] if zero_or_more else rule_string # take out the asterisk
 
-            rule_node = RuleNode(val=rule_name, zero_or_more=zero_or_more, is_end=is_end)
+            zero_or_more = (rule_string[-1] == '*') # zero or more occurrence
+            zero_or_one = (rule_string[-1] == '?') # zero or one occurrence
+
+            rule_name = rule_string[:-1] if zero_or_more or zero_or_one else rule_string # take out the asterisk
+
+            rule_node = RuleNode(val=rule_name, zero_or_one=zero_or_one, zero_or_more=zero_or_more, is_end=is_end)
 
             # if this node is not zero_or_more (while the next node is) and not last element
-            if is_end and not rule_node.zero_or_more:
+            if is_end and not (rule_node.zero_or_more or rule_node.zero_or_one):
                 is_end = False
 
             stack.push(rule_node)
-
 
 
         # push every rule into stack
@@ -46,10 +48,11 @@ class Rule:
 
 # linkedlist node
 class RuleNode(object):
-    def __init__(self, val=None, prev=None, next=None, zero_or_more=False, is_end=False):
+    def __init__(self, val=None, prev=None, next=None, zero_or_one=False, zero_or_more=False, is_end=False):
         self.value = val
         self.next = next
         self.prev = prev
+        self.zero_or_one = zero_or_one
         self.zero_or_more = zero_or_more
         self.is_end = is_end
 
@@ -67,11 +70,11 @@ class Rules:
         r.add_rule([Tags.Token.PERSON_NUMBER, "siblings_type", "siblings_name", "siblings_start*"])
 
         r2 = Rule('siblings_type')
-        r2.add_rule([Tags.Token.PERSON_BROTHERS, "delimiter*"])
-        r2.add_rule([Tags.Token.PERSON_SISTERS, "delimiter*"])
+        r2.add_rule([Tags.Token.PERSON_BROTHERS, "delimiter?"])
+        r2.add_rule([Tags.Token.PERSON_SISTERS, "delimiter?"])
 
         r3 = Rule('siblings_name')
-        r3.add_rule([Tags.Token.PERSON_NAME, "siblings_meta*", "siblings_location*", "delimiter*", "siblings_name*"])
+        r3.add_rule([Tags.Token.PERSON_NAME, "siblings_meta?", "siblings_location?", "delimiter?", "siblings_name*"])
 
         r4 = Rule('siblings_location')
         r4.add_rule([Tags.Token.PERSON_LOCATED_IN, Tags.Token.LOCATION_NAME])
@@ -89,7 +92,39 @@ class Rules:
         rules.append(r5)
         rules.append(r6)
 
-        return r, rules
+        return rules
+
+
+    @staticmethod
+    def get_parent_rules():
+        rules = []
+
+        r = Rule('parent_start', is_first=True)
+        r.add_rule(["parent_type", "parent_status?", "parent_location?", Tags.Token.PERSON_NAME+'?', 'delimiter?',
+                    'parent_start*'])
+
+        r2 = Rule('parent_type')
+        r2.add_rule([Tags.Token.PERSON_FATHER])
+        r2.add_rule([Tags.Token.PERSON_MOTHER])
+        r2.add_rule([Tags.Token.PERSON_PARENTS])
+
+        r3 = Rule('parent_location')
+        r3.add_rule([Tags.Token.PERSON_LOCATED_IN, Tags.Token.LOCATION_NAME])
+
+        r4 = Rule('parent_status')
+        r4.add_rule([Tags.Token.PERSON_IS_DEAD])
+        r4.add_rule([Tags.Token.PERSON_IS_LIVING])
+
+        r5 = Rule('delimiter')
+        r5.add_rule([Tags.Token.DELIMITER])
+
+        rules.append(r)
+        rules.append(r2)
+        rules.append(r3)
+        rules.append(r4)
+        rules.append(r5)
+
+        return rules
 
 
     @staticmethod
@@ -109,7 +144,17 @@ class Rules:
                 start_node = node
                 idx = start_idx
 
+                label_set = set() # check if zero_or_one nodes have occurred more than once
+
                 while idx < len(tokens) and node is not None:
+
+                    # check zero_or_one elements if they occur more than once
+                    if node.zero_or_one:
+                        if node.value not in label_set:
+                            label_set.add(node.value)
+                        else:
+                            # repeat occurrence of zero_or_one element
+                            break
 
                     # if rule node and token are matched, continue to match
                     if node.value == tokens[idx]:
@@ -136,6 +181,8 @@ class Rules:
         output_nodes = copy(nodes)
 
         for idx in range(len(output_labels)-1, -1, -1):
+
+            print(output_labels[idx])
             next_idx, matched_rule = Rules.check_match_rule(rules, output_labels, idx)
 
             if matched_rule is not None:
