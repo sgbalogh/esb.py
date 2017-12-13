@@ -1,8 +1,6 @@
 # vertex / node as named entity
 # edge as attribute/property
 
-
-
 class TreeNode(object):
 
     def __init__(self, label, token=None):

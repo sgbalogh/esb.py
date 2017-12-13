@@ -136,8 +136,6 @@ class Rules:
         output_nodes = copy(nodes)
 
         for idx in range(len(output_labels)-1, -1, -1):
-            current_label = output_labels[idx]
-
             next_idx, matched_rule = Rules.check_match_rule(rules, output_labels, idx)
 
             if matched_rule is not None:
