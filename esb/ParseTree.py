@@ -7,6 +7,8 @@ class TreeNode(object):
         self.label = label
         self.token = token
         self.children = []
+        self.dfs_color = "white"
+        self.dfs_parent = None
 
     def __str__(self):
         return '[{}, {}]'.format(self.label, self.token)

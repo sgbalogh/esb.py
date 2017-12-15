@@ -27,6 +27,13 @@ tc.train()
 ## Fully label a record entry, and print the result
 tc.label(sc.label(records[0])).print()
 
+pt = esb.SequenceParser.SequenceParser.create_parse_tree(records[0])
+pt_record = esb.SequenceParser.SequenceParser.discretize_tree(pt)
+
+## Create a geocoding location normalizer
+normalizer = esb.LocationNormalizer.LocationNormalizer()
+print(normalizer.best_guess("nyc"))
+
 ## Label first 1k records (will take a few moments)
 labeled_subset = list(map( lambda x: tc.label(sc.label(x)), records[0:1000]))
 ```
