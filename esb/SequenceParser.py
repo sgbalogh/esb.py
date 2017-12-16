@@ -1,35 +1,106 @@
 from esb import ParseTree
 from esb import Rules
 from esb.Triple import Triple
+from dateutil import parser as dp
 
 class SequenceParser:
 
     @staticmethod
     def discretize_tree(parse_tree):
-        triples = []
-        subject_profile = {}
-        print(parse_tree.children)
+        results = {}
         for theme in parse_tree.children:
-            if theme.label is "fam:siblings":
-                triples.append(SequenceParser.__read_siblings(theme, subject_profile))
-
-    # @staticmethod
-    # def dfs(root):
-    #     entities = []
-    #     for child in root.children:
-    #         if child.dfs_color is "white":
-    #             dfs.
-
-    # @staticmethod
-    # def dfs_visit(node, predicates):
-
-    # @staticmethod
-    # def __read_siblings(sibling_root, subject_profile):
-    #     siblings = []
-    #     churn = True
-    #     while (churn):
+            if theme.label == "fam:parents":
+                results['parents'] = SequenceParser.discretize_parents(theme)
+            elif theme.label == "subj:emigration-event":
+                results['emigration'] = SequenceParser.discretize_emigration(theme)
+            elif theme.label == "fam:siblings":
+                continue
+            elif theme.label == "meta:record-reference":
+                results['references'] = SequenceParser.discretize_references(theme)
+            elif theme.label == "subj:native-of":
+                results['nativity'] = SequenceParser.discretize_nativity(theme)
+        return results
 
     @staticmethod
+    ## this methods seems to work; it's the only one using DFS at the moment
+    def discretize_references(root_node):
+        if root_node.label == "meta:record-reference":
+            return SequenceParser.dfs(root_node, "t:meta:ACCOUNT_NUMBER")
+
+    @staticmethod
+    def dfs(root_node, search_label):
+        results = []
+        for x in root_node.children:
+            results = results + SequenceParser.dfs_visit(x, search_label)
+        return results
+
+    @staticmethod
+    def dfs_visit(start_node, search_label):
+        to_return = []
+        start_node.dfs_color = "gray"
+        for x in start_node.children:
+            if x.dfs_color == "white":
+                x.dfs_parent = start_node
+                if x.label == search_label:
+                    to_return.append(x.token)
+                else:
+                    to_return = to_return + SequenceParser.dfs_visit(x, search_label)
+        start_node.dfs_color = "black"
+        return to_return
+
+
+
+    @staticmethod
+    ## unclear if this method is achieving 100% recall of parse trees
+    def discretize_nativity(root_node):
+        if root_node.label == "subj:native-of":
+            record = {
+
+            }
+            for child in root_node.children:
+                if child.label == "native_of_start":
+                    for grandchild in child.children:
+                        if grandchild.label == "t:location:NAME":
+                            record['name'] = grandchild.token
+            return [record]
+
+    @staticmethod
+    ## this method is NOT reading parse trees with 100% recall (see records[1174])
+    def discretize_emigration(root_node):
+        if root_node.label == "subj:emigration-event":
+            record = {
+                "date" : {},
+                "vessel" : {}
+            }
+            for child in root_node.children:
+                if child.label == "emigration_start":
+                    for grandchild in child.children:
+                        if grandchild.label == "emigration_date":
+                            for greatgrandchild in grandchild.children:
+                                if greatgrandchild.label == "t:time:MONTH":
+                                    record['date']['month'] = greatgrandchild.token
+                                elif greatgrandchild.label == "t:time:DATE":
+                                    record['date']['date'] = greatgrandchild.token
+                                elif greatgrandchild.label == "t:time:YEAR":
+                                    record['date']['year'] = greatgrandchild.token
+                        if grandchild.label == "emigration_vessel":
+                            prev_label_was_VESSEL_HAS_ORIGIN: False
+                            for greatgrandchild in grandchild.children:
+                                if greatgrandchild.label == "t:emigration:VESSEL":
+                                    record['vessel']['name'] = greatgrandchild.token
+                                    prev_label_was_VESSEL_HAS_ORIGIN = False
+                                if greatgrandchild.label == "t:emigration:VESSEL_HAS_ORIGIN":
+                                    prev_label_was_VESSEL_HAS_ORIGIN = True
+                                if greatgrandchild.label == "t:location:NAME":
+                                    if prev_label_was_VESSEL_HAS_ORIGIN:
+                                        record['vessel']['origin'] = greatgrandchild.token
+            return [record]
+
+
+
+
+    @staticmethod
+    ## this method is NOT reading parse trees with 100% recall (see records[1174])
     def discretize_parents(root_node):
         if root_node.label == "fam:parents":
             collection = []
@@ -52,8 +123,6 @@ class SequenceParser:
                 return consolidated
             else:
                 return collection
-
-
 
     @staticmethod
     def find_parent(node, collection):
