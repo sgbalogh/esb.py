@@ -31,7 +31,7 @@ def main():
     # tc.label(sc.label(records[0])).print()
 
     ## Label first 1k records (will take a few moments)
-    labeled_subset = list(map(lambda x: tc.label(sc.label(x)), records[0:1000]))
+    labeled_subset = list(map(lambda x: tc.label(sc.label(x)), records[0:50]))
 
     for idx in range(len(labeled_subset)):
         record = labeled_subset[idx]
@@ -55,6 +55,7 @@ def main():
             record_root_node.children.append(label_root_node)
 
         # TreeNode.preorder_print(record_root_node)
+        print("yo")
 
 #TODO: siblings tag - add owner's last name into them
 #TODO: use hashmap to store entity nodes [name, node]
