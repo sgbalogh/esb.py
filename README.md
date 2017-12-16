@@ -27,7 +27,11 @@ tc.train()
 ## Fully label a record entry, and print the result
 tc.label(sc.label(records[0])).print()
 
+## Create a parse tree and store the root
 pt = esb.SequenceParser.SequenceParser.create_parse_tree(records[0])
+
+## Run the (currently buggy) function for turning the parse tree into
+## a set of discrete records
 pt_record = esb.SequenceParser.SequenceParser.discretize_tree(pt)
 
 ## Create a geocoding location normalizer
