@@ -29,12 +29,69 @@ class SequenceParser:
     #     churn = True
     #     while (churn):
 
+    @staticmethod
+    def discretize_parents(root_node):
+        if root_node.label == "fam:parents":
+            collection = []
+            for child in root_node.children:
+                SequenceParser.find_parent(child, collection)
+            ## merg
+            both = []
+            consolidated = []
+            for parent in collection:
+                if parent['type'] == "BOTH":
+                    for k,v in parent.items():
+                        if k != "type":
+                            both.append({k: v})
+            if len(both) > 0:
+                for parent in collection:
+                    if parent['type'] != "BOTH":
+                        for d in both:
+                            parent.update(d)
+                        consolidated.append(parent)
+                return consolidated
+            else:
+                return collection
+
+
+
+    @staticmethod
+    def find_parent(node, collection):
+        ## called on a parent_start node
+        if node.label is "parent_start":
+            record = {}
+            for child in node.children:
+                if child.label == "parent_type":
+                    for grandchild in child.children:
+                        if grandchild.label == "t:person:FATHER":
+                            record['type'] = "FATHER"
+                        elif grandchild.label == "t:person:MOTHER":
+                            record['type'] = "MOTHER"
+                        elif grandchild.label == "t:person:PARENTS":
+                            record['type'] = "BOTH"
+                elif child.label == "parent_location":
+                    for grandchild in child.children:
+                        if grandchild.label == "t:location:NAME":
+                            record['located_in'] = grandchild.token
+                elif child.label == "parent_status":
+                    for grandchild in child.children:
+                        if grandchild.label == "t:person:IS_DEAD":
+                            record['status'] = "dead"
+                        elif grandchild.label == "t:person:IS_ALIVE":
+                            record['status'] = "alive"
+                elif child.label == "t:person:NAME":
+                    record['name'] = child.token
+                elif child.label == "parent_start":
+                    SequenceParser.find_parent(child, collection)
+            collection.append(record)
+
 
     @staticmethod
     def create_parse_tree(labeled_record):
         stmt_lists, token_lists, remarks_lists = SequenceParser.split_lists_by_stmt_labels(labeled_record.statement_labels,
                                                                                            labeled_record.token_labels,
                                                                             [item[0] for item in labeled_record.remarks_labels])
+
         record_root_node = ParseTree.TreeNode(labeled_record.row['Name'])
         for label_idx in range(len(stmt_lists)):
             label_tag = stmt_lists[label_idx][0]

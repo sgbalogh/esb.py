@@ -18,9 +18,7 @@ class TreeNode(object):
     def preorder_print(node):
         if node is None:
             return
-
         print('{}'.format(node))
-
         for child in node.children:
             TreeNode.preorder_print(child)
 
