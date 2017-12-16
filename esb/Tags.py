@@ -27,7 +27,7 @@ class Tags:
     class Token:
         END = "END"
         START = "START"
-        DELIMITER = "delimiter:thematic"
+        DELIMITER = "t:DELIMITER"
         EMIGRATION_ARRIVED = "t:emigration:ARRIVED"
         EMIGRATION_VESSEL = "t:emigration:VESSEL"
         EMIGRATION_VESSEL_HAS_ORIGIN = "t:emigration:VESSEL_HAS_ORIGIN"
@@ -44,7 +44,6 @@ class Tags:
         META_NO_REMARKS = "t:meta:NO_REMARKS"
         META_SEE = "t:meta:SEE"
         META_PARENTHETICAL = "meta:parenthetical"
-
 
         PERSON_AGE = "t:person:AGE"
         PERSON_AGE_YEAR = "t:person:AGE_YEAR"
