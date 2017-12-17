@@ -268,7 +268,8 @@ class SequenceParser:
                         # Create a siblings entity when reached SIBLINGS_NAME
                         elif node.label == Rules.SIBLINGS_NAME:
                             sibling = dict()
-                            sibling['type'] = siblings_type
+                            if siblings_type is not None:
+                                sibling['type'] = siblings_type
 
                             for child_node in node.children:
                                 if child_node.label == Tags.Token.PERSON_NAME:
@@ -365,6 +366,7 @@ class SequenceParser:
 
                             if parent_status is not None:
                                 parent['status'] = parent_status
+
                             if parent_location is not None:
                                 parent['location'] = parent_location
 
