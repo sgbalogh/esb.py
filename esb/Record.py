@@ -11,12 +11,11 @@ class Record:
         return self.row['Remarks']
 
     def account_number(self):
-        return self.row['Index']
+        return self.row['Account']
 
     def remarks_tokens(self, encapsulate=True):
         if self.remarks_labels is None:
             self.remarks_labels = Utils.Utils.label_tokenize(self.remarks())
-
         if encapsulate:
             return self.remarks_labels
         else:
@@ -28,7 +27,7 @@ class Record:
 
     def print_statement_and_token(self):
         for x in range(0, len(self.token_labels)):
-            print(self.statement_labels[x], "\t", self.remarks_tokens()[x][0], "\t", self.token_labels[x])
+            print(str(x), self.statement_labels[x], "\t", self.remarks_tokens()[x][0], "\t", self.token_labels[x])
 
     def print(self):
         if self.statement_labels is not None and self.token_labels is not None:

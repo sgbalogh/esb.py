@@ -106,7 +106,6 @@ class TokenClassifier:
             if record.statement_labels is not None:
                 record.token_labels = self.predict_labeled_tokens(list(zip(map(lambda x: x[0], record.remarks_tokens()), record.statement_labels)))
                 labeled_record = record
-
         if labeled_record is not None:
             # list of token tags to concatenate
             concat_token_tags = [Tags.Token.LOCATION_NAME, Tags.Token.WORK_EMPLOYER_NAME, Tags.Token.PERSON_NAME,
