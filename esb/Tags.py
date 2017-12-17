@@ -64,6 +64,8 @@ class Tags:
         PERSON_SON = "t:person:SON"
         PERSON_HUSBAND = "t:person:HUSBAND"
         PERSON_WIFE = "t:person:WIFE"
+        PERSON_STEP_SIBLING = "t:person:STEP_SIBLING"
+        PERSON_IS_MINOR = "t:person:IS_MINOR"
 
         REL_HAS = "t:rel:HAS"
         REL_HAS_HUSBAND = "t:rel:HAS_HUSBAND"
@@ -72,6 +74,7 @@ class Tags:
         REL_IS_NATIVE_OF = "t:rel:IS_NATIVE_OF"
         REL_IS_WIDOW_OF = "t:rel:IS_WIDOW_OF"
         REL_IS_DAUGHTER_OF = "t:rel:IS_DAUGHTER_OF"
+        REL_TO = "t:rel:TO"
 
         RESIDENTIAL_RESIDENCE = "t:residential:RESIDENCE"
         RESIDENTIAL_CURRENTLY_LIVING_AT = "t:residential:CURRENTLY_LIVING_AT"
@@ -87,9 +90,12 @@ class Tags:
         TIME_YEAR = "t:time:YEAR"
         TIME_DURATION_VALUE = "t:time:DURATION_VALUE"
         TIME_DURATION_YEAR = "t:time:DURATION_YEAR"
+        TIME_ABOUT = "t:time:ABOUT"
 
         UNKNOWN = "t:UNKNOWN"
 
         WORK_EMPLOYER_NAME = "t:work:EMPLOYER_NAME"
         WORK_OCCUPATION = "t:work:OCCUPATION"
         WORK_WORKS_FOR = "t:work:WORKS_FOR"
+
+        BLANK = "t:BLANK"

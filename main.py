@@ -2,8 +2,7 @@ import esb
 from esb.Tags import Tags
 from esb.Rules import Rules
 from esb.ParseTree import *
-from esb.Stack import Stack
-
+from esb.SequenceParser import SequenceParser
 
 
 def main():
@@ -31,7 +30,7 @@ def main():
     # tc.label(sc.label(records[0])).print()
 
     ## Label first 1k records (will take a few moments)
-    labeled_subset = list(map(lambda x: tc.label(sc.label(x)), records[0:50]))
+    labeled_subset = list(map(lambda x: tc.label(sc.label(x)), records[:500]))
 
     for idx in range(len(labeled_subset)):
         record = labeled_subset[idx]
@@ -54,12 +53,50 @@ def main():
 
             record_root_node.children.append(label_root_node)
 
-        # TreeNode.preorder_print(record_root_node)
+
+        record_entity = {}
+
+        for subtree in record_root_node.children:
+            if subtree.label == Tags.Thematic.FAM_SIBLINGS:
+                record_entity['siblings'] = SequenceParser.parse_siblings_subtree(subtree)
+
+            elif subtree.label == Tags.Thematic.FAM_PARENTS:
+                record_entity['parents'] = SequenceParser.parse_parents_subtree(subtree)
+
+            elif subtree.label == Tags.Thematic.SUBJ_EMIGRATION:
+                record_entity['emigration'] = SequenceParser.parse_emigration_subtree(subtree)
+
+            elif subtree.label == Tags.Thematic.FAM_CHILDREN:
+                record_entity['children'] = SequenceParser.parse_children_subtree(subtree)
+
+            elif subtree.label == Tags.Thematic.FAM_SPOUSE:
+                record_entity['spouse'] = SequenceParser.parse_spouse_subtree(subtree)
+
+            elif subtree.label == Tags.Thematic.META_RECORD:
+                record_entity['record_reference'] = SequenceParser.parse_record_reference_subtree(subtree)
+
+            elif subtree.label == Tags.Thematic.SUBJ_AGE:
+                record_entity['age'] = SequenceParser.parse_age_subtree(subtree)
+
+            elif subtree.label == Tags.Thematic.SUBJ_BIO:
+                record_entity['bio'] = SequenceParser.parse_bio_subtree(subtree)
+
+            elif subtree.label == Tags.Thematic.SUBJ_MARTIAL:
+                record_entity['martial'] = SequenceParser.parse_martial_subtree(subtree)
+
+            elif subtree.label == Tags.Thematic.SUBJ_NATIVEOF:
+                record_entity['native_of'] = SequenceParser.parse_native_of_subtree(subtree)
+
+            elif subtree.label == Tags.Thematic.SUBJ_OCCUPATION:
+                record_entity['occupation'] = SequenceParser.parse_occupation_subtree(subtree)
+
+            elif subtree.label == Tags.Thematic.SUBJ_RESIDENCE:
+                record_entity['residence'] = SequenceParser.parse_residence_subtree(subtree)
+
         print("yo")
 
-#TODO: siblings tag - add owner's last name into them
-#TODO: use hashmap to store entity nodes [name, node]
-#TODO: attach Unknown tag with previous tag as attribute/properity to node
+        # TreeNode.preorder_print(record_root_node)
+
 
 # return the root of parsed tree for a specific tag
 def get_root_from_parse_tree(tokens, remarks, tag_name, rules):
@@ -85,28 +122,6 @@ def get_root_from_parse_tree(tokens, remarks, tag_name, rules):
             nodes = updated_nodes
 
     return root
-
-
-# Gather a specific type of Tag into a list
-# def get_specific_tag_records(records, tag_name):
-#
-#     output = list()
-#
-#     for record_idx in range(len(records)):
-#         record = records[record_idx]
-#
-#         same_tag_tokens = []
-#         for token_idx in range(len(record.statement_labels)):
-#             token = record.statement_labels[token_idx]
-#
-#             if tag_name == token:
-#                 tup = (record.token_labels[token_idx], record.remarks_labels[token_idx][0])
-#                 same_tag_tokens.append(tup)
-#
-#         if len(same_tag_tokens) > 0:
-#             output.append(same_tag_tokens)
-#
-#     return output
 
 
 def split_lists_by_stmt_labels(stmt_labels, token_labels, remarks_labels):
@@ -137,6 +152,7 @@ def split_lists_by_stmt_labels(stmt_labels, token_labels, remarks_labels):
     output_remarks_labels.append(remarks_labels[prev_label_idx:])
 
     return output_stmt_labels, output_token_labels, output_remarks_labels
+
 
 if __name__ == '__main__':
     main()

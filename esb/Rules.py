@@ -3,6 +3,7 @@ from esb.Stack import Stack
 from esb.ParseTree import *
 from copy import copy
 
+
 # list of linkedlist heads
 class Rule:
     def __init__(self, name, is_first=False):
@@ -62,22 +63,27 @@ class RuleNode(object):
 class Rules:
     ignored_tags = [Tags.Token.START, Tags.Token.END]
 
+    SIBLINGS_START = "siblings_start"
+    SIBLINGS_TYPE = "siblings_type"
+    SIBLINGS_NAME = "siblings_name"
+    SIBLINGS_LOCATION = "siblings_location"
+
     @staticmethod
     def get_siblings_rules():
         rules = []
 
-        r = Rule('siblings_start', is_first=True)
-        r.add_rule([Tags.Token.PERSON_NUMBER, "siblings_type", "siblings_name", "siblings_start*"])
+        r = Rule(Rules.SIBLINGS_START, is_first=True)
+        r.add_rule([Tags.Token.PERSON_NUMBER, Rules.SIBLINGS_TYPE, Rules.SIBLINGS_NAME+"*", Rules.SIBLINGS_START+"*"])
 
-        r2 = Rule('siblings_type')
+        r2 = Rule(Rules.SIBLINGS_TYPE)
         r2.add_rule([Tags.Token.PERSON_BROTHERS, Tags.Token.DELIMITER+"?"])
         r2.add_rule([Tags.Token.PERSON_SISTERS,  Tags.Token.DELIMITER+"?"])
 
-        r3 = Rule('siblings_name')
-        r3.add_rule([Tags.Token.PERSON_NAME, Tags.Token.META_PARENTHETICAL+"?", "siblings_location?", Tags.Token.DELIMITER+"?",
-                     "siblings_name*"])
+        r3 = Rule(Rules.SIBLINGS_NAME)
+        r3.add_rule([Tags.Token.PERSON_NAME, Tags.Token.META_PARENTHETICAL+"?", Rules.SIBLINGS_LOCATION+"?",
+                     Tags.Token.DELIMITER+"?"])
 
-        r4 = Rule('siblings_location')
+        r4 = Rule(Rules.SIBLINGS_LOCATION)
         r4.add_rule([Tags.Token.PERSON_LOCATED_IN, Tags.Token.LOCATION_NAME])
 
         rules.append(r)
@@ -87,23 +93,28 @@ class Rules:
 
         return rules
 
+    PARENT_START = "parent_start"
+    PARENT_TYPE = "parent_type"
+    PARENT_STATUS = "parent_status"
+    PARENT_LOCATION = "parent_location"
+
     @staticmethod
     def get_parent_rules():
         rules = []
 
-        r = Rule('parent_start', is_first=True)
-        r.add_rule(["parent_type", "parent_status?", "parent_location?", Tags.Token.PERSON_NAME+'?',
-                    Tags.Token.DELIMITER+'?', 'parent_start*'])
+        r = Rule(Rules.PARENT_START, is_first=True)
+        r.add_rule([Rules.PARENT_TYPE, Rules.PARENT_STATUS+"?", Rules.PARENT_LOCATION+"?", Tags.Token.PERSON_NAME+'?',
+                    Tags.Token.DELIMITER+'?', Rules.PARENT_START+"*"])
 
-        r2 = Rule('parent_type')
+        r2 = Rule(Rules.PARENT_TYPE)
         r2.add_rule([Tags.Token.PERSON_FATHER])
         r2.add_rule([Tags.Token.PERSON_MOTHER])
         r2.add_rule([Tags.Token.PERSON_PARENTS])
 
-        r3 = Rule('parent_location')
+        r3 = Rule(Rules.PARENT_LOCATION)
         r3.add_rule([Tags.Token.PERSON_LOCATED_IN, Tags.Token.LOCATION_NAME])
 
-        r4 = Rule('parent_status')
+        r4 = Rule(Rules.PARENT_STATUS)
         r4.add_rule([Tags.Token.PERSON_IS_DEAD])
         r4.add_rule([Tags.Token.PERSON_IS_LIVING])
 
@@ -114,19 +125,23 @@ class Rules:
 
         return rules
 
+    EMIGRATION_START = "emigration_start"
+    EMIGRATION_DATE = "emigration_date"
+    EMIGRATION_VESSEL = "emigration_vessel"
+
     @staticmethod
     def get_emigration_rules():
         rules = []
 
-        r = Rule('emigration_start', is_first=True)
-        r.add_rule([Tags.Token.EMIGRATION_ARRIVED, Tags.Token.LOCATION_NAME+'?', 'emigration_date?',
-                    Tags.Token.EMIGRATION_VIA, 'emigration_vessel'])
+        r = Rule(Rules.EMIGRATION_START, is_first=True)
+        r.add_rule([Tags.Token.EMIGRATION_ARRIVED, Tags.Token.LOCATION_NAME+'?', Rules.EMIGRATION_DATE+'?',
+                    Tags.Token.EMIGRATION_VIA, Rules.EMIGRATION_VESSEL])
 
-        r2 = Rule('emigration_date')
+        r2 = Rule(Rules.EMIGRATION_DATE)
         r2.add_rule([Tags.Token.TIME_MONTH, Tags.Token.TIME_YEAR, Tags.Token.DELIMITER+'?'])
         r2.add_rule([Tags.Token.TIME_MONTH, Tags.Token.TIME_DATE, Tags.Token.DELIMITER+'?'])
 
-        r3 = Rule('emigration_vessel')
+        r3 = Rule(Rules.EMIGRATION_VESSEL)
         r3.add_rule([Tags.Token.EMIGRATION_VESSEL, Tags.Token.EMIGRATION_VESSEL_HAS_ORIGIN+'?',
                      Tags.Token.LOCATION_NAME])
 
@@ -136,43 +151,55 @@ class Rules:
 
         return rules
 
+    CHILDREN_START = "children_start"
+    CHILDREN_NAME = "children_name"
+    CHILDREN_LOCATION = "children_location"
+
     @staticmethod
     def get_children_rules():
-        rules = []
 
-        r = Rule('children_start', is_first=True)
-        r.add_rule([Tags.Token.PERSON_NUMBER, Tags.Token.PERSON_CHILDREN, Tags.Token.DELIMITER+'?', 'children_name*'])
+        r = Rule(Rules.CHILDREN_START, is_first=True)
+        r.add_rule([Tags.Token.PERSON_NUMBER, Tags.Token.PERSON_CHILDREN, Tags.Token.DELIMITER+'?',
+                    Rules.CHILDREN_NAME+'*'])
+        r.add_rule([Tags.Token.SUBJ_IS_MAN, Tags.Token.PERSON_SON, Rules.CHILDREN_NAME+'*'])
+        # r.add_rule([Tags.Token.SUBJ_IS_WOMAN, Tags.Token.PERSON_DAU])
 
-        r2 = Rule('children_name')
-        r2.add_rule([Tags.Token.PERSON_NAME, Tags.Token.DELIMITER+'?'])
+        r2 = Rule(Rules.CHILDREN_NAME)
+        r2.add_rule([Tags.Token.PERSON_NAME, Rules.CHILDREN_LOCATION+'?', Tags.Token.DELIMITER+'?'])
 
-        rules.append(r)
-        rules.append(r2)
+        r3 = Rule(Rules.CHILDREN_LOCATION)
+        r3.add_rule([Tags.Token.REL_IS_NATIVE_OF, Tags.Token.LOCATION_NAME])
 
-        return rules
+        return [r, r2, r3]
+
+    SPOUSE_START = "spouse_start"
+    SPOUSE_RELATION = "spouse_relation"
+    SPOUSE_PERSON = "spouse_person"
+    SPOUSE_DURATION = "spouse_duration"
+    SPOUSE_LOCATION = "spouse_location"
 
     @staticmethod
     def get_spouse_rules():
         rules = []
 
-        r = Rule('spouse_start', is_first=True)
-        r.add_rule(['spouse_relation', Tags.Token.DELIMITER+'?', 'spouse_person*',
-                    'spouse_start*'])
+        r = Rule(Rules.SPOUSE_START, is_first=True)
+        r.add_rule([Rules.SPOUSE_RELATION, Tags.Token.DELIMITER+'?', Tags.Token.UNKNOWN+'?', Rules.SPOUSE_PERSON+'*',
+                    Rules.SPOUSE_START+'*'])
 
-        r2 = Rule('spouse_person')
-        r2.add_rule([Tags.Token.PERSON_NAME, Tags.Token.PERSON_IS_DEAD+'?', 'spouse_duration?', 'spouse_location?',
-                     Tags.Token.DELIMITER+'?'])
+        r2 = Rule(Rules.SPOUSE_PERSON)
+        r2.add_rule([Tags.Token.PERSON_NAME, Tags.Token.PERSON_IS_DEAD+'?', Rules.SPOUSE_DURATION+'?',
+                     Rules.SPOUSE_LOCATION+'?', Tags.Token.DELIMITER+'?'])
 
-        r3 = Rule('spouse_relation')
+        r3 = Rule(Rules.SPOUSE_RELATION)
         r3.add_rule([Tags.Token.REL_HAS_HUSBAND])
         r3.add_rule([Tags.Token.REL_HAS_WIFE])
         r3.add_rule([Tags.Token.REL_HAS_SPOUSE])
         r3.add_rule([Tags.Token.REL_IS_WIDOW_OF])
 
-        r4 = Rule('spouse_location')
+        r4 = Rule(Rules.SPOUSE_LOCATION)
         r4.add_rule([Tags.Token.PERSON_LOCATED_IN, Tags.Token.LOCATION_NAME])
 
-        r5 = Rule('spouse_duration')
+        r5 = Rule(Rules.SPOUSE_DURATION)
         r5.add_rule([Tags.Token.TIME_YEAR, Tags.Token.TIME_DURATION_YEAR])
 
         rules.append(r)
@@ -183,80 +210,89 @@ class Rules:
 
         return rules
 
+    REF_START = "ref_start"
+    REF_ACCOUNT = "ref_account"
+
+
     @staticmethod
     def get_record_ref_rules():
-        rules = []
+        r = Rule(Rules.REF_START, is_first=True)
+        r.add_rule([Tags.Token.META_SEE, Rules.REF_ACCOUNT+'*', Rules.REF_START+'*'])
+        r.add_rule([Tags.Token.META_IS_SAME_AS, Rules.REF_ACCOUNT+'*', Rules.REF_START+'*'])
 
-        r = Rule('ref_start', is_first=True)
-        r.add_rule([Tags.Token.META_SEE, 'ref_account*', 'ref_start*'])
-        r.add_rule([Tags.Token.META_IS_SAME_AS, 'ref_account*', 'ref_start*'])
-
-        r2 = Rule('ref_account')
+        r2 = Rule(Rules.REF_ACCOUNT)
         r2.add_rule([Tags.Token.META_ACCOUNT_NUMBER, Tags.Token.DELIMITER+'?'])
 
-        rules.append(r)
-        rules.append(r2)
+        return [r, r2]
 
-        return rules
+    AGE_START = "age_start"
 
     @staticmethod
     def get_age_rules():
-        r = Rule('age_start', is_first=True)
+        r = Rule(Rules.AGE_START, is_first=True)
         r.add_rule([Tags.Token.PERSON_AGE_YEAR, Tags.Token.PERSON_AGE])
 
         return [r]
 
+    BIO_START = "bio_start"
+
     @staticmethod
     def get_bio_rules():
-        r = Rule('bio_start', is_first=True)
+        r = Rule(Rules.BIO_START, is_first=True)
         r.add_rule([Tags.Token.TIME_DURATION_VALUE, Tags.Token.TIME_DURATION_YEAR, Tags.Token.PERSON_LOCATED_IN,
                     Tags.Token.LOCATION_NAME])
 
         return [r]
 
+    MARITAL_START = "marital_start"
+
     @staticmethod
     def get_marital_rules():
-        r = Rule('marital_start', is_first=True)
+        r = Rule(Rules.MARITAL_START, is_first=True)
         r.add_rule([Tags.Token.PERSON_IS_SINGLE])
 
         return [r]
 
+    NATIVE_OF_START = "native_of_start"
+    NATIVE_OF_DIST = "native_of_dist"
+
     @staticmethod
     def get_native_of_rules():
-        rules = []
+        r = Rule(Rules.NATIVE_OF_START, is_first=True)
+        r.add_rule([Tags.Token.REL_IS_NATIVE_OF, Tags.Token.LOCATION_NAME, Tags.Token.DELIMITER+'?',
+                    Rules.NATIVE_OF_DIST+'?', Rules.NATIVE_OF_START+'*'])
 
-        r = Rule('native_of_start', is_first=True)
-        r.add_rule([Tags.Token.REL_IS_NATIVE_OF, Tags.Token.LOCATION_NAME, Tags.Token.DELIMITER+'?', 'native_of_dist?',
-                    'native_of_start*'])
-
-        r2 = Rule('native_of_dist')
+        r2 = Rule(Rules.NATIVE_OF_DIST)
         r2.add_rule([Tags.Token.LOCATION_DISTANCE, Tags.Token.LOCATION_DISTANCE_UNIT+'?', Tags.Token.LOCATION_FROM,
                      Tags.Token.LOCATION_NAME])
 
-        rules.append(r)
-        rules.append(r2)
+        return [r, r2]
 
-        return rules
+    OCCUPATION_START = "occupation_start"
 
     @staticmethod
     def get_occupation_rules():
-        r = Rule('occupation_start', is_first=True)
+        r = Rule(Rules.OCCUPATION_START, is_first=True)
         r.add_rule([Tags.Token.WORK_WORKS_FOR, Tags.Token.WORK_EMPLOYER_NAME])
         r.add_rule([Tags.Token.WORK_OCCUPATION])
 
         return [r]
 
+    RESIDENTIAL_START = "residential_start"
+    RESIDENTIAL_PERSON = "residential_person"
+    RESIDENTIAL_LOCATION = "residential_location"
+
     @staticmethod
     def get_residential_rules():
-        r = Rule('residential_start', is_first=True)
-        r.add_rule([Tags.Token.RESIDENTIAL_LIVES_WITH, 'residential_person*', 'residential_start*'])
-        r.add_rule([Tags.Token.RESIDENTIAL_LIVED_WITH, 'residential_person*', 'residential_start*'])
-        r.add_rule([Tags.Token.RESIDENTIAL_CURRENTLY_LIVING_AT, Tags.Token.DELIMITER+'?', 'residential_location',
-                    'residential_person*', 'residential_start*'])
-        r.add_rule([Tags.Token.RESIDENTIAL_FORMERLY_LOCATED_AT, Tags.Token.DELIMITER+'?', 'residential_location',
-                    'residential_person*', 'residential_start*'])
+        r = Rule(Rules.RESIDENTIAL_START, is_first=True)
+        r.add_rule([Tags.Token.RESIDENTIAL_LIVES_WITH, Rules.RESIDENTIAL_PERSON+'*', Rules.RESIDENTIAL_START+'*'])
+        r.add_rule([Tags.Token.RESIDENTIAL_LIVED_WITH, Rules.RESIDENTIAL_PERSON+'*', Rules.RESIDENTIAL_START+'*'])
+        r.add_rule([Tags.Token.RESIDENTIAL_CURRENTLY_LIVING_AT, Tags.Token.DELIMITER+'?', Rules.RESIDENTIAL_LOCATION,
+                    Rules.RESIDENTIAL_PERSON+'*', Rules.RESIDENTIAL_START+'*'])
+        r.add_rule([Tags.Token.RESIDENTIAL_FORMERLY_LOCATED_AT, Tags.Token.DELIMITER+'?', Rules.RESIDENTIAL_LOCATION,
+                    Rules.RESIDENTIAL_PERSON+'*', Rules.RESIDENTIAL_START+'*'])
 
-        r2 = Rule('residential_person')
+        r2 = Rule(Rules.RESIDENTIAL_PERSON)
         r2.add_rule([Tags.Token.PERSON_NAME, Tags.Token.DELIMITER+'?'])
         r2.add_rule([Tags.Token.PERSON_SON, Tags.Token.DELIMITER+'?'])
         r2.add_rule([Tags.Token.PERSON_MOTHER, Tags.Token.DELIMITER+'?'])
@@ -266,7 +302,7 @@ class Rules:
         r2.add_rule([Tags.Token.PERSON_WIFE, Tags.Token.DELIMITER+'?'])
         r2.add_rule([Tags.Token.PERSON_CHILDREN, Tags.Token.DELIMITER+'?'])
 
-        r3 = Rule('residential_location')
+        r3 = Rule(Rules.RESIDENTIAL_LOCATION)
         r3.add_rule([Tags.Token.LOCATION_NAME, Tags.Token.DELIMITER+'?'])
 
         return [r, r2, r3]
