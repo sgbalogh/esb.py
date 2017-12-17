@@ -30,7 +30,9 @@ def main():
     # tc.label(sc.label(records[0])).print()
 
     ## Label first 1k records (will take a few moments)
-    labeled_subset = list(map(lambda x: tc.label(sc.label(x)), records[:500]))
+    labeled_subset = list(map(lambda x: tc.label(sc.label(x)), records[:2000]))
+
+    entity_subset = []
 
     for idx in range(len(labeled_subset)):
         record = labeled_subset[idx]
@@ -93,9 +95,11 @@ def main():
             elif subtree.label == Tags.Thematic.SUBJ_RESIDENCE:
                 record_entity['residence'] = SequenceParser.parse_residence_subtree(subtree)
 
-        print("yo")
-
+        if len(record_entity) > 0:
+            entity_subset.append(record_entity)
         # TreeNode.preorder_print(record_root_node)
+
+    print("yo")
 
 
 # return the root of parsed tree for a specific tag

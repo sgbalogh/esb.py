@@ -61,7 +61,7 @@ class RuleNode(object):
 
 
 class Rules:
-    ignored_tags = [Tags.Token.START, Tags.Token.END]
+    ignored_tags = [Tags.Token.START, Tags.Token.END, Tags.Thematic.DELIMITER, Tags.Token.DELIMITER]
 
     SIBLINGS_START = "siblings_start"
     SIBLINGS_TYPE = "siblings_type"
@@ -103,20 +103,21 @@ class Rules:
         rules = []
 
         r = Rule(Rules.PARENT_START, is_first=True)
-        r.add_rule([Rules.PARENT_TYPE, Rules.PARENT_STATUS+"?", Rules.PARENT_LOCATION+"?", Tags.Token.PERSON_NAME+'?',
+        r.add_rule([Rules.PARENT_TYPE, Rules.PARENT_STATUS+"?", Tags.Token.DELIMITER+'?', Rules.PARENT_LOCATION+"?",
+                    Tags.Token.DELIMITER+'?', Tags.Token.PERSON_NAME+'?',
                     Tags.Token.DELIMITER+'?', Rules.PARENT_START+"*"])
 
         r2 = Rule(Rules.PARENT_TYPE)
-        r2.add_rule([Tags.Token.PERSON_FATHER])
-        r2.add_rule([Tags.Token.PERSON_MOTHER])
-        r2.add_rule([Tags.Token.PERSON_PARENTS])
+        r2.add_rule([Tags.Token.PERSON_FATHER, Tags.Token.DELIMITER+'?'])
+        r2.add_rule([Tags.Token.PERSON_MOTHER, Tags.Token.DELIMITER+'?'])
+        r2.add_rule([Tags.Token.PERSON_PARENTS, Tags.Token.DELIMITER+'?'])
 
         r3 = Rule(Rules.PARENT_LOCATION)
-        r3.add_rule([Tags.Token.PERSON_LOCATED_IN, Tags.Token.LOCATION_NAME])
+        r3.add_rule([Tags.Token.PERSON_LOCATED_IN, Tags.Token.LOCATION_NAME, Tags.Token.DELIMITER+'?'])
 
         r4 = Rule(Rules.PARENT_STATUS)
-        r4.add_rule([Tags.Token.PERSON_IS_DEAD])
-        r4.add_rule([Tags.Token.PERSON_IS_LIVING])
+        r4.add_rule([Tags.Token.PERSON_IS_DEAD, Tags.Token.DELIMITER+'?'])
+        r4.add_rule([Tags.Token.PERSON_IS_LIVING, Tags.Token.DELIMITER+'?'])
 
         rules.append(r)
         rules.append(r2)

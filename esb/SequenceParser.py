@@ -330,21 +330,23 @@ class SequenceParser:
                         # Set parent_type variable when reached PARENT_TYPE
                         elif node.label == Rules.PARENT_TYPE:
 
-                            if node.children[0].label == Tags.Token.PERSON_FATHER:
-                                parent_type = "Father"
-                            elif node.children[0].label == Tags.Token.PERSON_MOTHER:
-                                parent_type = "Mother"
-                            elif node.children[0].label == Tags.Token.PERSON_PARENTS:
-                                parent_type = "Both"
+                            for child_node in node.children:
+                                if child_node.label == Tags.Token.PERSON_FATHER:
+                                    parent_type = "Father"
+                                elif child_node.label == Tags.Token.PERSON_MOTHER:
+                                    parent_type = "Mother"
+                                elif child_node.label == Tags.Token.PERSON_PARENTS:
+                                    parent_type = "Both"
 
                         # Set parent_status variable when reached PARENT_STATUS
                         elif node.label == Rules.PARENT_STATUS:
 
-                            if node.children[0].label == Tags.Token.PERSON_IS_DEAD:
-                                parent_status = "Dead"
+                            for child_node in node.children:
+                                if child_node.label == Tags.Token.PERSON_IS_DEAD:
+                                    parent_status = "Dead"
 
-                            elif node.children[0].label == Tags.Token.PERSON_IS_LIVING:
-                                parent_status = "Alive"
+                                elif child_node.label == Tags.Token.PERSON_IS_LIVING:
+                                    parent_status = "Alive"
 
                         # Set parent_location variable when reached PARENT_LOCATION
                         elif node.label == Rules.PARENT_LOCATION:
@@ -357,7 +359,9 @@ class SequenceParser:
                         # Create a parent entity when reached PERSON_NAME
                         elif node.label == Tags.Token.PERSON_NAME:
                             parent = dict()
-                            parent['type'] = parent_type
+
+                            if parent_type is not None:
+                                parent['type'] = parent_type
 
                             if parent_status is not None:
                                 parent['status'] = parent_status
