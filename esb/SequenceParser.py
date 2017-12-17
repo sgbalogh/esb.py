@@ -366,7 +366,7 @@ class SequenceParser:
                         node = queue.get()
 
                         # Put all nodes into queue when PARENT_START
-                        if node.label == Rules.PARENT_START:
+                        if node.label == Rules.PARENT_START or node.label == Rules.PARENT_SECOND:
                             parent_type = None
                             parent_status = None
                             parent_location = None
@@ -423,6 +423,23 @@ class SequenceParser:
             else:
                 parents_record.append(subtree_node.token)
 
+        if len(parents_record) == 0 and (parent_type is not None or parent_status is not None or
+                                                 parent_location is not None):
+
+            parent = dict()
+
+            if parent_type is not None:
+                parent['type'] = parent_type
+
+            if parent_status is not None:
+                parent['status'] = parent_status
+
+            if parent_location is not None:
+                parent['location'] = parent_location
+
+            if len(parent) > 0:
+                parents_record.append(parent)
+
         return parents_record
 
     @staticmethod
@@ -433,7 +450,7 @@ class SequenceParser:
         emigration_record = []
         emigration = dict()
 
-        misc = []
+        # misc = []
 
         for subtree_node in subtree_root.children:
 
@@ -504,11 +521,11 @@ class SequenceParser:
                             emigration['vessel'] = emigration_vessel
                             emigration_record.append(emigration)
 
-            else:
-                misc.append(subtree_node.token)
-
-            if len(misc) > 0:
-                emigration_record.append(misc)
+            # else:
+            #     misc.append(subtree_node.token)
+            #
+            # if len(misc) > 0:
+            #     emigration_record.append(misc)
 
         return emigration_record
 
@@ -519,7 +536,7 @@ class SequenceParser:
 
         children_record = dict()
         children = []
-        misc = []
+        # misc = []
 
         children_gender = None
 
@@ -578,16 +595,16 @@ class SequenceParser:
 
                             children.append(child)
 
-            else:
+            # else:
                 # unknown tags
-                for child_node in subtree_node.children:
-                    misc.append(child_node.token)
+                # for child_node in subtree_node.children:
+                #     misc.append(child_node.token)
 
         if len(children) > 0:
             children_record['children'] = children
 
-        if len(misc) > 0:
-            children_record['misc'] = misc
+        # if len(misc) > 0:
+        #     children_record['misc'] = misc
 
         return children_record
 
@@ -761,7 +778,7 @@ class SequenceParser:
             return None
 
         age_record = dict()
-        misc = []
+        # misc = []
 
         for subtree_node in subtree_root.children:
 
@@ -794,11 +811,11 @@ class SequenceParser:
                         elif node.label == Tags.Token.PERSON_AGE:
                             pass
 
-            else:
-                misc.append(subtree_node.token)
-
-        if len(misc) > 0:
-            age_record['misc'] = misc
+            # else:
+            #     misc.append(subtree_node.token)
+        #
+        # if len(misc) > 0:
+        #     age_record['misc'] = misc
 
         return age_record
 
@@ -810,7 +827,7 @@ class SequenceParser:
         bio_record = dict()
         time = None
         year = None
-        misc = []
+        # misc = []
 
         for subtree_node in subtree_root.children:
 
@@ -853,11 +870,11 @@ class SequenceParser:
                         elif node.label == Tags.Token.LOCATION_NAME:
                             bio_record['location'] = node.token
 
-            else:
-                misc.append(subtree_node.token)
-
-        if len(misc) > 0:
-            bio_record['misc'] = misc
+            # else:
+            #     misc.append(subtree_node.token)
+        #
+        # if len(misc) > 0:
+        #     bio_record['misc'] = misc
 
         if time is not None and year is not None:
             bio_record['duration'] = '{} {}'.format(str(time), str(year))
@@ -870,7 +887,7 @@ class SequenceParser:
             return None
 
         martial_record = dict()
-        misc = []
+        # misc = []
 
         for subtree_node in subtree_root.children:
 
@@ -899,11 +916,11 @@ class SequenceParser:
                         elif node.label == Tags.Token.PERSON_IS_SINGLE:
                             martial_record['status'] = node.token
 
-            else:
-                misc.append(subtree_node.token)
-
-        if len(misc) > 0:
-            martial_record['misc'] = misc
+            # else:
+            #     misc.append(subtree_node.token)
+        #
+        # if len(misc) > 0:
+        #     martial_record['misc'] = misc
 
         return martial_record
 
@@ -913,7 +930,7 @@ class SequenceParser:
             return None
 
         native_record = dict()
-        misc = []
+        # misc = []
 
         for subtree_node in subtree_root.children:
 
@@ -970,11 +987,11 @@ class SequenceParser:
                             distance_info['distance'] = '{} {}'.format(str(distance), str(distance_unit))
                             native_record['distance_from'] = distance_info
 
-            else:
-                misc.append(subtree_node.token)
-
-        if len(misc) > 0:
-            native_record['misc'] = misc
+            # else:
+            #     misc.append(subtree_node.token)
+        #
+        # if len(misc) > 0:
+        #     native_record['misc'] = misc
 
         return native_record
 
@@ -984,7 +1001,7 @@ class SequenceParser:
             return None
 
         occupation_record = dict()
-        misc = []
+        # misc = []
 
         for subtree_node in subtree_root.children:
 
@@ -1021,11 +1038,11 @@ class SequenceParser:
                         elif node.label == Tags.Token.WORK_OCCUPATION:
                             occupation_record['occupation'] = node.token
 
-            else:
-                misc.append(subtree_node.token)
-
-        if len(misc) > 0:
-            occupation_record['misc'] = misc
+            # else:
+            #     misc.append(subtree_node.token)
+        #
+        # if len(misc) > 0:
+        #     occupation_record['misc'] = misc
 
         return occupation_record
 
@@ -1039,7 +1056,7 @@ class SequenceParser:
         reside_location = None
         reside_people = []
 
-        misc = []
+        # misc = []
 
         for subtree_node in subtree_root.children:
 
@@ -1123,11 +1140,11 @@ class SequenceParser:
 
                             reside_people.append(person)
 
-            else:
-                misc.append(subtree_node.token)
-
-        if len(misc) > 0:
-            residence_record['misc'] = misc
+            # else:
+            #     misc.append(subtree_node.token)
+        #
+        # if len(misc) > 0:
+        #     residence_record['misc'] = misc
 
         return residence_record
 

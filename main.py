@@ -30,7 +30,7 @@ def main():
     # tc.label(sc.label(records[0])).print()
 
     ## Label first 1k records (will take a few moments)
-    labeled_subset = list(map(lambda x: tc.label(sc.label(x)), records[:2000]))
+    labeled_subset = list(map(lambda x: tc.label(sc.label(x)), records[:600]))
 
     entity_subset = []
 
@@ -55,9 +55,7 @@ def main():
 
             record_root_node.children.append(label_root_node)
 
-
         record_entity = {}
-
         for subtree in record_root_node.children:
             if subtree.label == Tags.Thematic.FAM_SIBLINGS:
                 record_entity['siblings'] = SequenceParser.parse_siblings_subtree(subtree)
@@ -118,7 +116,8 @@ def get_root_from_parse_tree(tokens, remarks, tag_name, rules):
         if len(updated_tokens) == len(tokens) and updated_tokens == tokens:
             # add the rest of the unattached nodes to root
             for node in nodes:
-                root.children.append(node)
+                if node.label not in Rules.ignored_tags:
+                    root.children.append(node)
             break
         else:
             tokens = updated_tokens
