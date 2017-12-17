@@ -12,7 +12,7 @@ class StatementFeatures:
     @staticmethod
     def get_word_features(sentence, i):
         features = {}
-        for x in range(i - 2, i + 3):
+        for x in range(i - 3, i + 4):
             if 0 <= x < len(sentence):
                 rel_pos_str = str(-(i - x))
                 features.update(StatementFeatures.__emit_word_features(-(i - x), sentence[x][0]))

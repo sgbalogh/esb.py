@@ -97,7 +97,6 @@ def main():
 
         if len(record_entity) > 0:
             entity_subset.append(record_entity)
-        # TreeNode.preorder_print(record_root_node)
 
     print("yo")
 

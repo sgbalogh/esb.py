@@ -10,6 +10,9 @@ class Record:
     def remarks(self):
         return self.row['Remarks']
 
+    def account_number(self):
+        return self.row['Index']
+
     def remarks_tokens(self, encapsulate=True):
         if self.remarks_labels is None:
             self.remarks_labels = Utils.Utils.label_tokenize(self.remarks())

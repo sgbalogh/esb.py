@@ -3,6 +3,7 @@
 Sample use:
 ```python
 import esb
+import json
 
 ## Load in all of the 25k records
 records = esb.Utils.Utils.auto_load()
@@ -30,9 +31,11 @@ tc.label(sc.label(records[0])).print()
 ## Create a parse tree and store the root
 pt = esb.SequenceParser.SequenceParser.create_parse_tree(records[0])
 
-## Run the (currently buggy) function for turning the parse tree into
-## a set of discrete records
-pt_record = esb.SequenceParser.SequenceParser.discretize_tree(pt)
+## Fully process a record
+extracted_record = esb.SequenceParser.SequenceParser.process_completely(records[13000],tc,sc)
+
+## Print the JSON version
+print(json.dumps(extracted_record))
 
 ## Create a geocoding location normalizer
 normalizer = esb.LocationNormalizer.LocationNormalizer()

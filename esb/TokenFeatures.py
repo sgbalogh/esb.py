@@ -14,7 +14,7 @@ class TokenFeatures:
     def get_word_features(sentence,i):
         features = {}
         i_statement_label = sentence[i][1]
-        for x in range(i - 4, i + 5):
+        for x in range(i - 3, i + 4):
             if 0 <= x < len(sentence):
                 rel_pos_str = str(-(i - x))
                 features.update(TokenFeatures.__emit_word_features(-(i - x), sentence[x][0], sentence[x][1]))
