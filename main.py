@@ -93,7 +93,6 @@ def main():
             elif subtree.label == Tags.Thematic.SUBJ_RESIDENCE:
                 record_entity['residence'] = SequenceParser.parse_residence_subtree(subtree)
 
-        print("yo")
 
         # TreeNode.preorder_print(record_root_node)
 

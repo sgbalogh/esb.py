@@ -1,12 +1,58 @@
 from esb import ParseTree
 from esb.Rules import Rules
 from esb.Tags import Tags
+
 from queue import Queue
 
 from esb.Triple import Triple
 # from dateutil import parser as dp
 
 class SequenceParser:
+
+    ## Given a record (and two CRF classifiers), it labels the record,
+    ## parses it, and interprets the parse tree
+    @staticmethod
+    def process_completely(record, tc, sc):
+        pt = SequenceParser.create_parse_tree(tc.label(sc.label(record)))
+        extracted = SequenceParser.record_entity(pt)
+        return {
+            "original": {
+                "account_number": record.account_number(),
+                "fields": record.row,
+                "remarks": record.remarks()
+            },
+            "extracted": extracted
+        }
+
+    @staticmethod
+    def record_entity(parse_tree):
+        record_entity = {}
+        for subtree in parse_tree.children:
+            if subtree.label == Tags.Thematic.FAM_SIBLINGS:
+                record_entity['siblings'] = SequenceParser.parse_siblings_subtree(subtree)
+            elif subtree.label == Tags.Thematic.FAM_PARENTS:
+                record_entity['parents'] = SequenceParser.parse_parents_subtree(subtree)
+            elif subtree.label == Tags.Thematic.SUBJ_EMIGRATION:
+                record_entity['emigration'] = SequenceParser.parse_emigration_subtree(subtree)
+            elif subtree.label == Tags.Thematic.FAM_CHILDREN:
+                record_entity['children'] = SequenceParser.parse_children_subtree(subtree)
+            elif subtree.label == Tags.Thematic.FAM_SPOUSE:
+                record_entity['spouse'] = SequenceParser.parse_spouse_subtree(subtree)
+            elif subtree.label == Tags.Thematic.META_RECORD:
+                record_entity['record_reference'] = SequenceParser.parse_record_reference_subtree(subtree)
+            elif subtree.label == Tags.Thematic.SUBJ_AGE:
+                record_entity['age'] = SequenceParser.parse_age_subtree(subtree)
+            elif subtree.label == Tags.Thematic.SUBJ_BIO:
+                record_entity['bio'] = SequenceParser.parse_bio_subtree(subtree)
+            elif subtree.label == Tags.Thematic.SUBJ_MARTIAL:
+                record_entity['martial'] = SequenceParser.parse_martial_subtree(subtree)
+            elif subtree.label == Tags.Thematic.SUBJ_NATIVEOF:
+                record_entity['native_of'] = SequenceParser.parse_native_of_subtree(subtree)
+            elif subtree.label == Tags.Thematic.SUBJ_OCCUPATION:
+                record_entity['occupation'] = SequenceParser.parse_occupation_subtree(subtree)
+            elif subtree.label == Tags.Thematic.SUBJ_RESIDENCE:
+                record_entity['residence'] = SequenceParser.parse_residence_subtree(subtree)
+        return record_entity
 
     @staticmethod
     def discretize_tree(parse_tree):
@@ -167,9 +213,9 @@ class SequenceParser:
         record_root_node = ParseTree.TreeNode(labeled_record.row['Name'])
         for label_idx in range(len(stmt_lists)):
             label_tag = stmt_lists[label_idx][0]
-            if label_tag in Rules.Rules.ignored_tags:
+            if label_tag in Rules.ignored_tags:
                 continue
-            label_rules = Rules.Rules.get_rules_by_tag(label_tag)
+            label_rules = Rules.get_rules_by_tag(label_tag)
             label_root_node = SequenceParser.get_root_from_parse_tree(token_lists[label_idx], remarks_lists[label_idx], label_tag,
                                                        label_rules)
             record_root_node.children.append(label_root_node)
