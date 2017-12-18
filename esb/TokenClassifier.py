@@ -117,7 +117,7 @@ class TokenClassifier:
                                  Tags.Token.PERSON_IS_SINGLE, Tags.Token.WORK_OCCUPATION, Tags.Token.WORK_WORKS_FOR,
                                  Tags.Token.RESIDENTIAL_LIVED_WITH, Tags.Token.RESIDENTIAL_LIVES_WITH,
                                  Tags.Token.RESIDENTIAL_FORMERLY_LOCATED_AT, Tags.Token.RESIDENTIAL_CURRENTLY_LIVING_AT,
-                                 Tags.Token.META_ACCOUNT_CLOSED]
+                                 Tags.Token.META_ACCOUNT_CLOSED, Tags.Token.DELIMITER]
 
             return self.concatenate_tokens_by_tags(labeled_record, concat_token_tags)
         else:
