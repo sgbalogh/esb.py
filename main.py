@@ -30,7 +30,7 @@ def main():
     # tc.label(sc.label(records[0])).print()
 
     ## Label first 1k records (will take a few moments)
-    labeled_subset = list(map(lambda x: tc.label(sc.label(x)), records[:500]))
+    labeled_subset = list(map(lambda x: tc.label(sc.label(x)), records[4581:4582]))
 
     entity_subset = []
 
@@ -53,7 +53,7 @@ def main():
             label_root_node = get_root_from_parse_tree(token_lists[label_idx], remarks_lists[label_idx], label_tag,
                                                        label_rules)
 
-            if label_tag == Tags.Thematic.FAM_CHILDREN:
+            if label_tag == Tags.Thematic.FAM_SIBLINGS:
                 print("PAUSE")
 
             record_root_node.children.append(label_root_node)

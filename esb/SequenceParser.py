@@ -281,7 +281,7 @@ class SequenceParser:
             if subtree_node.label == Tags.Token.BLANK:
                 continue
 
-            if subtree_node.label == Rules.SIBLINGS_START:
+            if subtree_node.label == Rules.SIBLINGS_START or subtree_node.label == Rules.SIBLINGS_NAME:
 
                 # BFS
                 queue = Queue()
@@ -353,7 +353,7 @@ class SequenceParser:
             if subtree_node.label == Tags.Token.BLANK:
                 continue
 
-            if subtree_node.label == Rules.PARENT_START:
+            if subtree_node.label == Rules.PARENT_START or subtree_node.label == Rules.PARENT_SECOND:
 
                 # BFS
                 queue = Queue()
@@ -545,7 +545,7 @@ class SequenceParser:
             if subtree_node.label == Tags.Token.BLANK:
                 continue
 
-            if subtree_node.label == Rules.CHILDREN_START:
+            if subtree_node.label == Rules.CHILDREN_START or subtree_node.label == Rules.CHILDREN_NAME:
 
                 # BFS
                 queue = Queue()
@@ -621,7 +621,7 @@ class SequenceParser:
             if subtree_node.label == Tags.Token.BLANK:
                 continue
 
-            if subtree_node.label == Rules.SPOUSE_START:
+            if subtree_node.label == Rules.SPOUSE_START or subtree_node.label == Rules.SPOUSE_PERSON:
 
                 # BFS
                 queue = Queue()
