@@ -107,29 +107,29 @@ class Rules:
         r.add_rule([Rules.PARENT_SECOND, Rules.PARENT_START+"*"])
 
         r2 = Rule(Rules.PARENT_TYPE)
-        r2.add_rule([Tags.Token.PERSON_FATHER, Tags.Token.DELIMITER+'*'])
-        r2.add_rule([Tags.Token.PERSON_MOTHER, Tags.Token.DELIMITER+'*'])
-        r2.add_rule([Tags.Token.PERSON_PARENTS, Tags.Token.DELIMITER+'*'])
+        r2.add_rule([Tags.Token.PERSON_FATHER, Tags.Token.DELIMITER+'?'])
+        r2.add_rule([Tags.Token.PERSON_MOTHER, Tags.Token.DELIMITER+'?'])
+        r2.add_rule([Tags.Token.PERSON_PARENTS, Tags.Token.DELIMITER+'?'])
 
         r3 = Rule(Rules.PARENT_LOCATION)
         r3.add_rule([Tags.Token.PERSON_LOCATED_IN, Tags.Token.LOCATION_NAME, Tags.Token.DELIMITER,
-                     Tags.Token.LOCATION_NAME, Tags.Token.DELIMITER+'*'])
-        r3.add_rule([Tags.Token.PERSON_LOCATED_IN, Tags.Token.LOCATION_NAME, Tags.Token.DELIMITER+'*'])
-        r3.add_rule([Tags.Token.RESIDENTIAL_CURRENTLY_LIVING_AT, Tags.Token.LOCATION_NAME])
+                     Tags.Token.LOCATION_NAME, Tags.Token.DELIMITER+'?'])
+        r3.add_rule([Tags.Token.PERSON_LOCATED_IN, Tags.Token.LOCATION_NAME, Tags.Token.DELIMITER+'?'])
+        r3.add_rule([Tags.Token.RESIDENTIAL_CURRENTLY_LIVING_AT, Tags.Token.LOCATION_NAME, Tags.Token.DELIMITER+'?'])
         r3.add_rule([Tags.Token.RESIDENTIAL_CURRENTLY_LIVING_AT, Rules.PARENT_LOCATION+"*"])
 
         r4 = Rule(Rules.PARENT_STATUS)
-        r4.add_rule([Tags.Token.PERSON_IS_DEAD, Tags.Token.DELIMITER+'*'])
-        r4.add_rule([Tags.Token.PERSON_IS_LIVING, Tags.Token.DELIMITER+'*'])
+        r4.add_rule([Tags.Token.PERSON_IS_DEAD, Tags.Token.DELIMITER+'?'])
+        r4.add_rule([Tags.Token.PERSON_IS_LIVING, Tags.Token.DELIMITER+'?'])
 
         r5 = Rule(Rules.PARENT_SECOND)
-        r5.add_rule([Rules.PARENT_TYPE, Rules.PARENT_STATUS, Tags.Token.PERSON_NAME, Tags.Token.DELIMITER+'*',
+        r5.add_rule([Rules.PARENT_TYPE, Rules.PARENT_STATUS, Tags.Token.PERSON_NAME, Tags.Token.DELIMITER+'?',
                      Tags.Token.PERSON_NAME+"*"])
-        r5.add_rule([Rules.PARENT_TYPE, Rules.PARENT_LOCATION, Tags.Token.PERSON_NAME, Tags.Token.DELIMITER+'*',
+        r5.add_rule([Rules.PARENT_TYPE, Rules.PARENT_LOCATION, Tags.Token.PERSON_NAME, Tags.Token.DELIMITER+'?',
                      Tags.Token.PERSON_NAME+"*"])
-        r5.add_rule([Rules.PARENT_TYPE, Tags.Token.PERSON_NAME, Tags.Token.DELIMITER+'*', Tags.Token.PERSON_NAME+"*"])
+        r5.add_rule([Rules.PARENT_TYPE, Tags.Token.PERSON_NAME, Tags.Token.DELIMITER+'?', Tags.Token.PERSON_NAME+"?"])
         r5.add_rule([Rules.PARENT_TYPE, Rules.PARENT_LOCATION, Rules.PARENT_STATUS, Tags.Token.PERSON_NAME,
-                     Tags.Token.DELIMITER+'*', Tags.Token.PERSON_NAME+"*"])
+                     Tags.Token.DELIMITER+'?', Tags.Token.PERSON_NAME+"?"])
         r5.add_rule([Rules.PARENT_TYPE, Rules.PARENT_LOCATION, Tags.Token.PERSON_NAME])
 
         rules.append(r)
@@ -153,8 +153,8 @@ class Rules:
                     Tags.Token.EMIGRATION_VIA, Rules.EMIGRATION_VESSEL])
 
         r2 = Rule(Rules.EMIGRATION_DATE)
-        r2.add_rule([Tags.Token.TIME_MONTH, Tags.Token.TIME_DATE, Tags.Token.DELIMITER+'*', Tags.Token.TIME_YEAR])
-        r2.add_rule([Tags.Token.TIME_MONTH, Tags.Token.TIME_YEAR, Tags.Token.DELIMITER+'*'])
+        r2.add_rule([Tags.Token.TIME_MONTH, Tags.Token.TIME_DATE, Tags.Token.DELIMITER+'?', Tags.Token.TIME_YEAR])
+        r2.add_rule([Tags.Token.TIME_MONTH, Tags.Token.TIME_YEAR, Tags.Token.DELIMITER+'?'])
 
         r3 = Rule(Rules.EMIGRATION_VESSEL)
         r3.add_rule([Tags.Token.EMIGRATION_VESSEL, Tags.Token.EMIGRATION_VESSEL_HAS_ORIGIN+'?',
@@ -174,12 +174,12 @@ class Rules:
     def get_children_rules():
 
         r = Rule(Rules.CHILDREN_START, is_first=True)
-        r.add_rule([Tags.Token.PERSON_NUMBER, Tags.Token.PERSON_CHILDREN, Tags.Token.DELIMITER+'*',
+        r.add_rule([Tags.Token.PERSON_NUMBER, Tags.Token.PERSON_CHILDREN, Tags.Token.DELIMITER+'?',
                     Rules.CHILDREN_NAME+'*'])
         r.add_rule([Tags.Token.SUBJ_IS_MAN, Tags.Token.PERSON_SON, Rules.CHILDREN_NAME+'*'])
 
         r2 = Rule(Rules.CHILDREN_NAME)
-        r2.add_rule([Tags.Token.PERSON_NAME, Rules.CHILDREN_LOCATION+'?', Tags.Token.DELIMITER+'*'])
+        r2.add_rule([Tags.Token.PERSON_NAME, Rules.CHILDREN_LOCATION+'?', Tags.Token.DELIMITER+'?'])
 
         r3 = Rule(Rules.CHILDREN_LOCATION)
         r3.add_rule([Tags.Token.REL_IS_NATIVE_OF, Tags.Token.LOCATION_NAME])
@@ -197,12 +197,12 @@ class Rules:
         rules = []
 
         r = Rule(Rules.SPOUSE_START, is_first=True)
-        r.add_rule([Rules.SPOUSE_RELATION, Tags.Token.DELIMITER+'*', Tags.Token.UNKNOWN+'*', Rules.SPOUSE_PERSON+'*',
+        r.add_rule([Rules.SPOUSE_RELATION, Tags.Token.DELIMITER+'?', Tags.Token.UNKNOWN+'*', Rules.SPOUSE_PERSON+'*',
                     Rules.SPOUSE_START+'*'])
 
         r2 = Rule(Rules.SPOUSE_PERSON)
         r2.add_rule([Tags.Token.PERSON_NAME, Tags.Token.PERSON_IS_DEAD+'?', Rules.SPOUSE_DURATION+'?',
-                     Rules.SPOUSE_LOCATION+'?', Tags.Token.DELIMITER+'*'])
+                     Rules.SPOUSE_LOCATION+'?', Tags.Token.DELIMITER+'?'])
 
         r3 = Rule(Rules.SPOUSE_RELATION)
         r3.add_rule([Tags.Token.REL_HAS_HUSBAND])
@@ -273,7 +273,7 @@ class Rules:
     @staticmethod
     def get_native_of_rules():
         r = Rule(Rules.NATIVE_OF_START, is_first=True)
-        r.add_rule([Tags.Token.REL_IS_NATIVE_OF, Tags.Token.LOCATION_NAME, Tags.Token.DELIMITER+'*',
+        r.add_rule([Tags.Token.REL_IS_NATIVE_OF, Tags.Token.LOCATION_NAME, Tags.Token.DELIMITER+'?',
                     Rules.NATIVE_OF_DIST+'?', Rules.NATIVE_OF_START+'*'])
 
         r2 = Rule(Rules.NATIVE_OF_DIST)
@@ -301,23 +301,23 @@ class Rules:
         r = Rule(Rules.RESIDENTIAL_START, is_first=True)
         r.add_rule([Tags.Token.RESIDENTIAL_LIVES_WITH, Rules.RESIDENTIAL_PERSON+'*', Rules.RESIDENTIAL_START+'*'])
         r.add_rule([Tags.Token.RESIDENTIAL_LIVED_WITH, Rules.RESIDENTIAL_PERSON+'*', Rules.RESIDENTIAL_START+'*'])
-        r.add_rule([Tags.Token.RESIDENTIAL_CURRENTLY_LIVING_AT, Tags.Token.DELIMITER+'*', Rules.RESIDENTIAL_LOCATION,
+        r.add_rule([Tags.Token.RESIDENTIAL_CURRENTLY_LIVING_AT, Tags.Token.DELIMITER+'?', Rules.RESIDENTIAL_LOCATION,
                     Rules.RESIDENTIAL_PERSON+'*', Rules.RESIDENTIAL_START+'*'])
-        r.add_rule([Tags.Token.RESIDENTIAL_FORMERLY_LOCATED_AT, Tags.Token.DELIMITER+'*', Rules.RESIDENTIAL_LOCATION,
+        r.add_rule([Tags.Token.RESIDENTIAL_FORMERLY_LOCATED_AT, Tags.Token.DELIMITER+'?', Rules.RESIDENTIAL_LOCATION,
                     Rules.RESIDENTIAL_PERSON+'*', Rules.RESIDENTIAL_START+'*'])
 
         r2 = Rule(Rules.RESIDENTIAL_PERSON)
-        r2.add_rule([Tags.Token.PERSON_NAME, Tags.Token.DELIMITER+'*'])
-        r2.add_rule([Tags.Token.PERSON_SON, Tags.Token.DELIMITER+'*'])
-        r2.add_rule([Tags.Token.PERSON_MOTHER, Tags.Token.DELIMITER+'*'])
-        r2.add_rule([Tags.Token.PERSON_FATHER, Tags.Token.DELIMITER+'*'])
-        r2.add_rule([Tags.Token.PERSON_BROTHERS, Tags.Token.DELIMITER+'*'])
-        r2.add_rule([Tags.Token.PERSON_SISTERS, Tags.Token.DELIMITER+'*'])
-        r2.add_rule([Tags.Token.PERSON_WIFE, Tags.Token.DELIMITER+'*'])
-        r2.add_rule([Tags.Token.PERSON_CHILDREN, Tags.Token.DELIMITER+'*'])
+        r2.add_rule([Tags.Token.PERSON_NAME, Tags.Token.DELIMITER+'?'])
+        r2.add_rule([Tags.Token.PERSON_SON, Tags.Token.DELIMITER+'?'])
+        r2.add_rule([Tags.Token.PERSON_MOTHER, Tags.Token.DELIMITER+'?'])
+        r2.add_rule([Tags.Token.PERSON_FATHER, Tags.Token.DELIMITER+'?'])
+        r2.add_rule([Tags.Token.PERSON_BROTHERS, Tags.Token.DELIMITER+'?'])
+        r2.add_rule([Tags.Token.PERSON_SISTERS, Tags.Token.DELIMITER+'?'])
+        r2.add_rule([Tags.Token.PERSON_WIFE, Tags.Token.DELIMITER+'?'])
+        r2.add_rule([Tags.Token.PERSON_CHILDREN, Tags.Token.DELIMITER+'?'])
 
         r3 = Rule(Rules.RESIDENTIAL_LOCATION)
-        r3.add_rule([Tags.Token.LOCATION_NAME, Tags.Token.DELIMITER+'*'])
+        r3.add_rule([Tags.Token.LOCATION_NAME, Tags.Token.DELIMITER+'?'])
 
         return [r, r2, r3]
 

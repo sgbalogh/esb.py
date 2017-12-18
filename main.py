@@ -30,7 +30,7 @@ def main():
     # tc.label(sc.label(records[0])).print()
 
     ## Label first 1k records (will take a few moments)
-    labeled_subset = list(map(lambda x: tc.label(sc.label(x)), records[:600]))
+    labeled_subset = list(map(lambda x: tc.label(sc.label(x)), records[:1000]))
 
     entity_subset = []
 
