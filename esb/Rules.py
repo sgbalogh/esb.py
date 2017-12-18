@@ -117,6 +117,8 @@ class Rules:
         r3.add_rule([Tags.Token.PERSON_LOCATED_IN, Tags.Token.LOCATION_NAME, Tags.Token.DELIMITER+'?'])
         r3.add_rule([Tags.Token.RESIDENTIAL_CURRENTLY_LIVING_AT, Tags.Token.LOCATION_NAME, Tags.Token.DELIMITER+'?'])
         r3.add_rule([Tags.Token.RESIDENTIAL_CURRENTLY_LIVING_AT, Rules.PARENT_LOCATION+"*"])
+        r3.add_rule([Tags.Token.RESIDENTIAL_FORMERLY_LOCATED_AT, Tags.Token.LOCATION_NAME, Tags.Token.DELIMITER+'?'])
+        r3.add_rule([Tags.Token.RESIDENTIAL_FORMERLY_LOCATED_AT, Rules.PARENT_LOCATION+"*"])
 
         r4 = Rule(Rules.PARENT_STATUS)
         r4.add_rule([Tags.Token.PERSON_IS_DEAD, Tags.Token.DELIMITER+'?'])
