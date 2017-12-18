@@ -11,7 +11,8 @@ class HeuristicInterpreter:
             "linked-accounts": HeuristicInterpreter.find_account_references(tuple_list),
             "father-location": HeuristicInterpreter.find_father_location(tuple_list),
             "mother-location": HeuristicInterpreter.find_mother_location(tuple_list),
-            "parents-location": HeuristicInterpreter.find_parents_location(tuple_list)
+            "parents-location": HeuristicInterpreter.find_parents_location(tuple_list),
+            "children-number": HeuristicInterpreter.find_number_children(tuple_list)
         }
         return interpreted_record
 
@@ -66,7 +67,12 @@ class HeuristicInterpreter:
                     account['vessel'] = token
                     prior_V_H_O = False
 
-        return account
+    def find_number_children(sequence):
+        for token, statement, tag in sequence:
+            if statement == "fam:children":
+                if tag == "t:person:NUMBER":
+                    return token
+        return 0
 
     def find_account_references(sequence):
         refs = []
