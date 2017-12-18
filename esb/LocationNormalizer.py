@@ -1,4 +1,4 @@
-# import requests
+import requests
 import json
 import urllib
 
@@ -31,6 +31,9 @@ class LocationNormalizer:
                 "geocoding_match": False
             }
 
-
     def __first_pass(self, search_string):
-        return search_string
+        return search_string.replace("Ire ", "Ireland") \
+                     .replace("Ger ", "Germany") \
+                     .replace("LP ", "Liverpool") \
+                     .replace("Eng ", "England") \
+                     .replace("Co ", "County")

@@ -16,8 +16,8 @@ class SequenceParser:
         pt = SequenceParser.create_parse_tree(tc.label(sc.label(record)))
         extracted = SequenceParser.record_entity(pt)
         return {
+            "account_number": record.account_number(),
             "original": {
-                "account_number": record.account_number(),
                 "fields": record.row,
                 "remarks": record.remarks()
             },

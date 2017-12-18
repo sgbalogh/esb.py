@@ -16,3 +16,5 @@ from esb import Tags
 from esb import SequenceParser
 from esb import Triple
 from esb import LocationNormalizer
+from esb import GraphWriter
+from esb import HeuristicInterpreter
