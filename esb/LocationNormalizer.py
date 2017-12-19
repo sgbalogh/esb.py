@@ -13,6 +13,21 @@ class LocationNormalizer:
         r = requests.get(query).json()
         return r['features']
 
+    def best_guess_iterate(self, search_string):
+        resp = self.best_guess(search_string)
+        if resp['geocoding_match']:
+            return resp
+        else:
+            tokens = search_string.split(" ")
+            for x in range(1,len(tokens)):
+                phrase = " ".join(tokens[x:])
+                r2 = self.best_guess(phrase)
+                if r2['geocoding_match']:
+                    return r2
+            return resp
+
+
+
     def best_guess(self, search_string):
         candidates = self.find_candidates(search_string)
         if len(candidates) > 0:
@@ -32,8 +47,18 @@ class LocationNormalizer:
             }
 
     def __first_pass(self, search_string):
-        return search_string.replace("Ire ", "Ireland") \
-                     .replace("Ger ", "Germany") \
-                     .replace("LP ", "Liverpool") \
-                     .replace("Eng ", "England") \
-                     .replace("Co ", "County")
+        search_tokens = search_string.split(" ")
+        replacements = {
+            "Ire": "Ireland",
+            "Ger": "Germany",
+            "Eng": "England",
+            "LP": "Liverpool",
+            "Co": "County"
+        }
+        mod_tokens = []
+        for token in search_tokens:
+            if token in replacements:
+                mod_tokens.append(replacements[token])
+            else:
+                mod_tokens.append(token)
+        return " ".join(mod_tokens)

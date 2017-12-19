@@ -25,6 +25,41 @@ class SequenceParser:
         }
 
     @staticmethod
+    def process_completely_and_normalize(record, tc, sc, norm):
+        processed = SequenceParser.process_completely(record, tc, sc)
+        processed['extracted']['native_of_objects'] = []
+        processed['extracted']['emig_destination'] = []
+        processed['extracted']['emig_origin'] = []
+        for k,v in processed['extracted'].items():
+            if k == "native_of":
+                if 'distance_from' in v:
+                    if 'from' in v['distance_from']:
+                        resp = norm.best_guess_iterate(v['distance_from']['from'])
+                        processed['extracted']['native_of_objects'].append(resp)
+                if 'location' in v:
+                    resp = norm.best_guess_iterate(v['location'])
+                    processed['extracted']['native_of_objects'].append(resp)
+            elif k == "parents":
+                for parent in v:
+                    if isinstance(parent, dict):
+                        for k2, v2 in parent.items():
+                            if k2 == "location":
+                                parent[k2] = norm.best_guess_iterate(v2)
+            elif k == "siblings":
+                print("hi")
+            elif k == "emigration":
+                for x in v:
+                    if 'location' in x:
+                        processed['extracted']['emig_destination'].append(norm.best_guess_iterate(x['location']))
+                    if 'vessel' in x:
+                        if 'location' in x['vessel']:
+                            processed['extracted']['emig_origin'].append(norm.best_guess_iterate(x['vessel']['location']))
+                print("hi")
+
+        return processed
+
+
+    @staticmethod
     def record_entity(parse_tree):
         record_entity = {}
         for subtree in parse_tree.children:
