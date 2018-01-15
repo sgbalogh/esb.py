@@ -7,8 +7,9 @@ from esb.Record import Record
 import sklearn_crfsuite
 from sklearn_crfsuite import metrics
 
+
 class StatementClassifier:
-    def __init__ (self, training_data=None):
+    def __init__(self, training_data=None):
         self.training_set_labeled = []
         self.training_set_features = []
         self.training_set_labels = []
@@ -59,12 +60,16 @@ class StatementClassifier:
         self.__process_validation_data()
 
     def __process_training_data(self):
-        self.training_set_features = [StatementFeatures.get_sentence_features(s) for s in self.training_set_labeled]
-        self.training_set_labels = [StatementFeatures.get_sentence_labels(s) for s in self.training_set_labeled]
+        self.training_set_features = [
+            StatementFeatures.get_sentence_features(s) for s in self.training_set_labeled]
+        self.training_set_labels = [
+            StatementFeatures.get_sentence_labels(s) for s in self.training_set_labeled]
 
     def __process_validation_data(self):
-        self.validation_set_features = [StatementFeatures.get_sentence_features(s) for s in self.validation_set_labeled]
-        self.validation_set_labels = [StatementFeatures.get_sentence_labels(s) for s in self.validation_set_labeled]
+        self.validation_set_features = [
+            StatementFeatures.get_sentence_features(s) for s in self.validation_set_labeled]
+        self.validation_set_labels = [
+            StatementFeatures.get_sentence_labels(s) for s in self.validation_set_labeled]
 
     def train(self):
         self.crf = sklearn_crfsuite.CRF(
@@ -74,13 +79,17 @@ class StatementClassifier:
             max_iterations=1000,
             all_possible_transitions=True,
             verbose=True
-            )
+        )
         self.crf.fit(self.training_set_features, self.training_set_labels)
 
     def validation_metrics(self):
         labels = list(self.crf.classes_)
         validation_predictions = self.crf.predict(self.validation_set_features)
-        return metrics.flat_f1_score(self.validation_set_labels, validation_predictions, average='weighted', labels=labels)
+        return metrics.flat_f1_score(
+            self.validation_set_labels,
+            validation_predictions,
+            average='weighted',
+            labels=labels)
 
     def print_validation_metrics_per_class(self):
         validation_predictions = self.crf.predict(self.validation_set_features)
@@ -88,17 +97,22 @@ class StatementClassifier:
             list(self.crf.classes_),
             key=lambda name: (name[1:], name[0])
         )
-        print(metrics.flat_classification_report(
-            self.validation_set_labels, validation_predictions, labels=sorted_labels, digits=5
-        ))
+        print(
+            metrics.flat_classification_report(
+                self.validation_set_labels,
+                validation_predictions,
+                labels=sorted_labels,
+                digits=5))
 
     def predict_labeled_tokens(self, labeled_tokens):
-        features_set = [StatementFeatures.get_sentence_features(labeled_tokens)]
+        features_set = [
+            StatementFeatures.get_sentence_features(labeled_tokens)]
         return self.crf.predict(features_set)[0]
 
     def label(self, record):
         if isinstance(record, list):
             return list(self.label(x) for x in record)
         else:
-            record.statement_labels = self.predict_labeled_tokens(record.remarks_tokens())
+            record.statement_labels = self.predict_labeled_tokens(
+                record.remarks_tokens())
             return record

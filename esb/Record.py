@@ -1,5 +1,6 @@
 from esb import Utils
 
+
 class Record:
     def __init__(self, row):
         self.row = row
@@ -27,7 +28,13 @@ class Record:
 
     def print_statement_and_token(self):
         for x in range(0, len(self.token_labels)):
-            print(str(x), self.statement_labels[x], "\t", self.remarks_tokens()[x][0], "\t", self.token_labels[x])
+            print(
+                str(x),
+                self.statement_labels[x],
+                "\t",
+                self.remarks_tokens()[x][0],
+                "\t",
+                self.token_labels[x])
 
     def print(self):
         if self.statement_labels is not None and self.token_labels is not None:

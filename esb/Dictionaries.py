@@ -2,22 +2,84 @@
 class Dictionaries:
     @staticmethod
     def months():
-        return ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october",
-                "november", "december", "jan", "feb", "mar", "ap", "apr", "jun", "jul", "aug", "sept", "sep"
-                "oct", "nov", "dec"]
+        return [
+            "january",
+            "february",
+            "march",
+            "april",
+            "may",
+            "june",
+            "july",
+            "august",
+            "september",
+            "october",
+            "november",
+            "december",
+            "jan",
+            "feb",
+            "mar",
+            "ap",
+            "apr",
+            "jun",
+            "jul",
+            "aug",
+            "sept",
+            "sep"
+            "oct",
+            "nov",
+            "dec"]
 
     @staticmethod
     def common_locations():
-        return ["ire", "ireland", "county", "ger", "germany", "lp", "london", "new", "york", "ny", "america", "us",
-                "hungary", "england", "liverpool", "poland", "france", "paris", "prussia", "county", "jersey", "usa"]
+        return [
+            "ire",
+            "ireland",
+            "county",
+            "ger",
+            "germany",
+            "lp",
+            "london",
+            "new",
+            "york",
+            "ny",
+            "america",
+            "us",
+            "hungary",
+            "england",
+            "liverpool",
+            "poland",
+            "france",
+            "paris",
+            "prussia",
+            "county",
+            "jersey",
+            "usa"]
 
     @staticmethod
     def brother_sister():
-        return ["bro", "sis", "brother", "sister", "brothers", "sisters", "bro", "bros", "sis", "br"]
+        return [
+            "bro",
+            "sis",
+            "brother",
+            "sister",
+            "brothers",
+            "sisters",
+            "bro",
+            "bros",
+            "sis",
+            "br"]
 
     @staticmethod
     def children():
-        return ["child", "children", "chld", "ch", "son", "sons", "daughter", "daughters"]
+        return [
+            "child",
+            "children",
+            "chld",
+            "ch",
+            "son",
+            "sons",
+            "daughter",
+            "daughters"]
 
     @staticmethod
     def relationship_tokens():

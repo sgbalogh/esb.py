@@ -1,8 +1,9 @@
-## This class contains common feature-extraction functions used by both
-## CRF models
+# This class contains common feature-extraction functions used by both
+# CRF models
 
 from functools import partial
 from esb.Dictionaries import Dictionaries
+
 
 class Features:
     @staticmethod
@@ -56,11 +57,18 @@ class Features:
 
     @staticmethod
     def get_sentence_features(sentence):
-        return [Features.get_word_features(sentence, i) for i in range(len(sentence))]
+        return [
+            Features.get_word_features(
+                sentence,
+                i) for i in range(
+                len(sentence))]
 
     @staticmethod
     def get_sentence_labels(sentence):
-        return [token_label for token, statement_label, token_label in sentence]
+        return [
+            token_label for token,
+            statement_label,
+            token_label in sentence]
 
     @staticmethod
     def get_sentence_tokens(sentence):
@@ -175,7 +183,7 @@ class Features:
         try:
             num = int(dc)
             return ((1600 < num < 1980) or (0 <= num <= 99))
-        except:
+        except BaseException:
             return False
 
     @staticmethod

@@ -1,6 +1,7 @@
 import csv
 from esb import Record
 
+
 class Utils:
     @staticmethod
     def label_tokenize(input):
@@ -41,7 +42,7 @@ class Utils:
                 if index == 0:
                     headers = row
                 else:
-                    rows.append(dict(zip(headers,row)))
+                    rows.append(dict(zip(headers, row)))
         return rows
 
     @staticmethod

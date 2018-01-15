@@ -8,8 +8,9 @@ from esb.Tags import Tags
 import sklearn_crfsuite
 from sklearn_crfsuite import metrics
 
+
 class TokenClassifier:
-    def __init__ (self, training_data=None):
+    def __init__(self, training_data=None):
         self.training_set_labeled = []
         self.training_set_features = []
         self.training_set_labels = []
@@ -30,7 +31,7 @@ class TokenClassifier:
                 if index == 0:
                     headers = row
                 elif index > 1:
-                    rows.append(dict(zip(headers,row)))
+                    rows.append(dict(zip(headers, row)))
         example_number = -1
         example = None
         for row in rows:
@@ -42,7 +43,10 @@ class TokenClassifier:
                 else:
                     labeled_data.append(example)
                     example = []
-            example.append((row['token'], row['label:thematic'], row['label:token']))
+            example.append(
+                (row['token'],
+                 row['label:thematic'],
+                    row['label:token']))
         labeled_data.append(example)
         return labeled_data
 
@@ -60,12 +64,16 @@ class TokenClassifier:
         self.__process_validation_data()
 
     def __process_training_data(self):
-        self.training_set_features = [TokenFeatures.get_sentence_features(s) for s in self.training_set_labeled]
-        self.training_set_labels = [TokenFeatures.get_sentence_labels(s) for s in self.training_set_labeled]
+        self.training_set_features = [
+            TokenFeatures.get_sentence_features(s) for s in self.training_set_labeled]
+        self.training_set_labels = [
+            TokenFeatures.get_sentence_labels(s) for s in self.training_set_labeled]
 
     def __process_validation_data(self):
-        self.validation_set_features = [TokenFeatures.get_sentence_features(s) for s in self.validation_set_labeled]
-        self.validation_set_labels = [TokenFeatures.get_sentence_labels(s) for s in self.validation_set_labeled]
+        self.validation_set_features = [
+            TokenFeatures.get_sentence_features(s) for s in self.validation_set_labeled]
+        self.validation_set_labels = [
+            TokenFeatures.get_sentence_labels(s) for s in self.validation_set_labeled]
 
     def train(self):
         self.crf = sklearn_crfsuite.CRF(
@@ -75,13 +83,17 @@ class TokenClassifier:
             max_iterations=1000,
             all_possible_transitions=True,
             verbose=True
-            )
+        )
         self.crf.fit(self.training_set_features, self.training_set_labels)
 
     def validation_metrics(self):
         labels = list(self.crf.classes_)
         validation_predictions = self.crf.predict(self.validation_set_features)
-        return metrics.flat_f1_score(self.validation_set_labels, validation_predictions, average='weighted', labels=labels)
+        return metrics.flat_f1_score(
+            self.validation_set_labels,
+            validation_predictions,
+            average='weighted',
+            labels=labels)
 
     def print_validation_metrics_per_class(self):
         validation_predictions = self.crf.predict(self.validation_set_features)
@@ -89,9 +101,12 @@ class TokenClassifier:
             list(self.crf.classes_),
             key=lambda name: (name[1:], name[0])
         )
-        print(metrics.flat_classification_report(
-            self.validation_set_labels, validation_predictions, labels=sorted_labels, digits=5
-        ))
+        print(
+            metrics.flat_classification_report(
+                self.validation_set_labels,
+                validation_predictions,
+                labels=sorted_labels,
+                digits=5))
 
     def predict_labeled_tokens(self, labeled_tokens):
         features_set = [TokenFeatures.get_sentence_features(labeled_tokens)]
@@ -104,22 +119,41 @@ class TokenClassifier:
             labeled_record = list(self.label(x) for x in record)
         else:
             if record.statement_labels is not None:
-                record.token_labels = self.predict_labeled_tokens(list(zip(map(lambda x: x[0], record.remarks_tokens()), record.statement_labels)))
+                record.token_labels = self.predict_labeled_tokens(
+                    list(zip(map(lambda x: x[0], record.remarks_tokens()), record.statement_labels)))
                 labeled_record = record
         if labeled_record is not None:
             # list of token tags to concatenate
-            concat_token_tags = [Tags.Token.LOCATION_NAME, Tags.Token.WORK_EMPLOYER_NAME, Tags.Token.PERSON_NAME,
-                                 Tags.Token.REL_IS_NATIVE_OF, Tags.Token.META_PARENTHETICAL,
-                                 Tags.Token.EMIGRATION_VESSEL, Tags.Token.TIME_MONTH, Tags.Token.EMIGRATION_VIA,
-                                 Tags.Token.REL_HAS_SPOUSE, Tags.Token.UNKNOWN, Tags.Token.REL_IS_WIDOW_OF,
-                                 Tags.Token.REL_HAS_HUSBAND, Tags.Token.REL_HAS_WIFE, Tags.Token.PERSON_IS_WIDOWED,
-                                 Tags.Token.META_NO_REMARKS, Tags.Token.META_IS_SAME_AS, Tags.Token.PERSON_AGE,
-                                 Tags.Token.PERSON_IS_SINGLE, Tags.Token.WORK_OCCUPATION, Tags.Token.WORK_WORKS_FOR,
-                                 Tags.Token.RESIDENTIAL_LIVED_WITH, Tags.Token.RESIDENTIAL_LIVES_WITH,
-                                 Tags.Token.RESIDENTIAL_FORMERLY_LOCATED_AT, Tags.Token.RESIDENTIAL_CURRENTLY_LIVING_AT,
-                                 Tags.Token.META_ACCOUNT_CLOSED, Tags.Token.DELIMITER]
+            concat_token_tags = [
+                Tags.Token.LOCATION_NAME,
+                Tags.Token.WORK_EMPLOYER_NAME,
+                Tags.Token.PERSON_NAME,
+                Tags.Token.REL_IS_NATIVE_OF,
+                Tags.Token.META_PARENTHETICAL,
+                Tags.Token.EMIGRATION_VESSEL,
+                Tags.Token.TIME_MONTH,
+                Tags.Token.EMIGRATION_VIA,
+                Tags.Token.REL_HAS_SPOUSE,
+                Tags.Token.UNKNOWN,
+                Tags.Token.REL_IS_WIDOW_OF,
+                Tags.Token.REL_HAS_HUSBAND,
+                Tags.Token.REL_HAS_WIFE,
+                Tags.Token.PERSON_IS_WIDOWED,
+                Tags.Token.META_NO_REMARKS,
+                Tags.Token.META_IS_SAME_AS,
+                Tags.Token.PERSON_AGE,
+                Tags.Token.PERSON_IS_SINGLE,
+                Tags.Token.WORK_OCCUPATION,
+                Tags.Token.WORK_WORKS_FOR,
+                Tags.Token.RESIDENTIAL_LIVED_WITH,
+                Tags.Token.RESIDENTIAL_LIVES_WITH,
+                Tags.Token.RESIDENTIAL_FORMERLY_LOCATED_AT,
+                Tags.Token.RESIDENTIAL_CURRENTLY_LIVING_AT,
+                Tags.Token.META_ACCOUNT_CLOSED,
+                Tags.Token.DELIMITER]
 
-            return self.concatenate_tokens_by_tags(labeled_record, concat_token_tags)
+            return self.concatenate_tokens_by_tags(
+                labeled_record, concat_token_tags)
         else:
             return False
 
@@ -150,7 +184,8 @@ class TokenClassifier:
                     # append to previous label
                     current_remark[0] = current_remark[0] + ' ' + token[0]
 
-                if idx + 1 < size and current_token_tag != record.token_labels[idx+1] or idx + 1 == size:
+                if idx + \
+                        1 < size and current_token_tag != record.token_labels[idx + 1] or idx + 1 == size:
                     new_remarks_tokens.append(tuple(current_remark))
                     new_statement_labels.append(record.statement_labels[idx])
                     new_token_labels.append(record.token_labels[idx])
@@ -167,5 +202,3 @@ class TokenClassifier:
         output_record.remarks_labels = new_remarks_tokens
 
         return output_record
-
-
