@@ -2,9 +2,10 @@ class HeuristicInterpreter:
 
     @staticmethod
     def interpret(labeled_record):
-        tuple_list = list(zip(labeled_record.remarks_tokens(False), labeled_record.statement_labels, labeled_record.token_labels ))
+        tuple_list = list(zip(labeled_record.remarks_tokens(
+            False), labeled_record.statement_labels, labeled_record.token_labels))
         interpreted_record = {
-            "parent_names" : HeuristicInterpreter.find_parent_names(tuple_list),
+            "parent_names": HeuristicInterpreter.find_parent_names(tuple_list),
             "sibling_names": HeuristicInterpreter.find_sibling_names(tuple_list),
             "emigration_account": HeuristicInterpreter.find_emigration_account(tuple_list),
             "native-location": HeuristicInterpreter.find_nativity(tuple_list),
@@ -12,8 +13,7 @@ class HeuristicInterpreter:
             "father-location": HeuristicInterpreter.find_father_location(tuple_list),
             "mother-location": HeuristicInterpreter.find_mother_location(tuple_list),
             "parents-location": HeuristicInterpreter.find_parents_location(tuple_list),
-            "children-number": HeuristicInterpreter.find_number_children(tuple_list)
-        }
+            "children-number": HeuristicInterpreter.find_number_children(tuple_list)}
         return interpreted_record
 
     @staticmethod
@@ -23,7 +23,7 @@ class HeuristicInterpreter:
     @staticmethod
     def find_sibling_names(sequence):
         names = []
-        for token,statement,tag in sequence:
+        for token, statement, tag in sequence:
             if statement == "fam:siblings":
                 if tag == "t:person:NAME":
                     names.append(token)

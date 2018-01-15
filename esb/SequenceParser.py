@@ -4,13 +4,11 @@ from esb.Tags import Tags
 
 from queue import Queue
 
-from esb.Triple import Triple
-# from dateutil import parser as dp
 
 class SequenceParser:
 
-    ## Given a record (and two CRF classifiers), it labels the record,
-    ## parses it, and interprets the parse tree
+    # Given a record (and two CRF classifiers), it labels the record,
+    # parses it, and interprets the parse tree
     @staticmethod
     def process_completely(record, tc, sc):
         pt = SequenceParser.create_parse_tree(tc.label(sc.label(record)))
@@ -30,12 +28,14 @@ class SequenceParser:
         processed['extracted']['native_of_objects'] = []
         processed['extracted']['emig_destination'] = []
         processed['extracted']['emig_origin'] = []
-        for k,v in processed['extracted'].items():
+        for k, v in processed['extracted'].items():
             if k == "native_of":
                 if 'distance_from' in v:
                     if 'from' in v['distance_from']:
-                        resp = norm.best_guess_iterate(v['distance_from']['from'])
-                        processed['extracted']['native_of_objects'].append(resp)
+                        resp = norm.best_guess_iterate(
+                            v['distance_from']['from'])
+                        processed['extracted']['native_of_objects'].append(
+                            resp)
                 if 'location' in v:
                     resp = norm.best_guess_iterate(v['location'])
                     processed['extracted']['native_of_objects'].append(resp)
@@ -50,43 +50,55 @@ class SequenceParser:
             elif k == "emigration":
                 for x in v:
                     if 'location' in x:
-                        processed['extracted']['emig_destination'].append(norm.best_guess_iterate(x['location']))
+                        processed['extracted']['emig_destination'].append(
+                            norm.best_guess_iterate(x['location']))
                     if 'vessel' in x:
                         if 'location' in x['vessel']:
-                            processed['extracted']['emig_origin'].append(norm.best_guess_iterate(x['vessel']['location']))
-                print("hi")
+                            processed['extracted']['emig_origin'].append(
+                                norm.best_guess_iterate(x['vessel']['location']))
 
         return processed
-
 
     @staticmethod
     def record_entity(parse_tree):
         record_entity = {}
         for subtree in parse_tree.children:
             if subtree.label == Tags.Thematic.FAM_SIBLINGS:
-                record_entity['siblings'] = SequenceParser.parse_siblings_subtree(subtree)
+                record_entity['siblings'] = SequenceParser.parse_siblings_subtree(
+                    subtree)
             elif subtree.label == Tags.Thematic.FAM_PARENTS:
-                record_entity['parents'] = SequenceParser.parse_parents_subtree(subtree)
+                record_entity['parents'] = SequenceParser.parse_parents_subtree(
+                    subtree)
             elif subtree.label == Tags.Thematic.SUBJ_EMIGRATION:
-                record_entity['emigration'] = SequenceParser.parse_emigration_subtree(subtree)
+                record_entity['emigration'] = SequenceParser.parse_emigration_subtree(
+                    subtree)
             elif subtree.label == Tags.Thematic.FAM_CHILDREN:
-                record_entity['children'] = SequenceParser.parse_children_subtree(subtree)
+                record_entity['children'] = SequenceParser.parse_children_subtree(
+                    subtree)
             elif subtree.label == Tags.Thematic.FAM_SPOUSE:
-                record_entity['spouse'] = SequenceParser.parse_spouse_subtree(subtree)
+                record_entity['spouse'] = SequenceParser.parse_spouse_subtree(
+                    subtree)
             elif subtree.label == Tags.Thematic.META_RECORD:
-                record_entity['record_reference'] = SequenceParser.parse_record_reference_subtree(subtree)
+                record_entity['record_reference'] = SequenceParser.parse_record_reference_subtree(
+                    subtree)
             elif subtree.label == Tags.Thematic.SUBJ_AGE:
-                record_entity['age'] = SequenceParser.parse_age_subtree(subtree)
+                record_entity['age'] = SequenceParser.parse_age_subtree(
+                    subtree)
             elif subtree.label == Tags.Thematic.SUBJ_BIO:
-                record_entity['bio'] = SequenceParser.parse_bio_subtree(subtree)
+                record_entity['bio'] = SequenceParser.parse_bio_subtree(
+                    subtree)
             elif subtree.label == Tags.Thematic.SUBJ_MARTIAL:
-                record_entity['martial'] = SequenceParser.parse_martial_subtree(subtree)
+                record_entity['martial'] = SequenceParser.parse_martial_subtree(
+                    subtree)
             elif subtree.label == Tags.Thematic.SUBJ_NATIVEOF:
-                record_entity['native_of'] = SequenceParser.parse_native_of_subtree(subtree)
+                record_entity['native_of'] = SequenceParser.parse_native_of_subtree(
+                    subtree)
             elif subtree.label == Tags.Thematic.SUBJ_OCCUPATION:
-                record_entity['occupation'] = SequenceParser.parse_occupation_subtree(subtree)
+                record_entity['occupation'] = SequenceParser.parse_occupation_subtree(
+                    subtree)
             elif subtree.label == Tags.Thematic.SUBJ_RESIDENCE:
-                record_entity['residence'] = SequenceParser.parse_residence_subtree(subtree)
+                record_entity['residence'] = SequenceParser.parse_residence_subtree(
+                    subtree)
         return record_entity
 
     @staticmethod
@@ -96,20 +108,23 @@ class SequenceParser:
             if theme.label == Tags.Thematic.FAM_PARENTS:
                 results['parents'] = SequenceParser.discretize_parents(theme)
             elif theme.label == Tags.Thematic.SUBJ_EMIGRATION:
-                results['emigration'] = SequenceParser.discretize_emigration(theme)
+                results['emigration'] = SequenceParser.discretize_emigration(
+                    theme)
             elif theme.label == Tags.Thematic.FAM_SIBLINGS:
                 continue
             elif theme.label == Tags.Thematic.META_RECORD:
-                results['references'] = SequenceParser.discretize_references(theme)
+                results['references'] = SequenceParser.discretize_references(
+                    theme)
             elif theme.label == Tags.Thematic.SUBJ_NATIVEOF:
                 results['nativity'] = SequenceParser.discretize_nativity(theme)
         return results
 
     @staticmethod
-    ## this methods seems to work; it's the only one using DFS at the moment
+    # this methods seems to work; it's the only one using DFS at the moment
     def discretize_references(root_node):
         if root_node.label == Tags.Thematic.META_RECORD:
-            return SequenceParser.dfs(root_node, Tags.Token.META_ACCOUNT_NUMBER)
+            return SequenceParser.dfs(
+                root_node, Tags.Token.META_ACCOUNT_NUMBER)
 
     @staticmethod
     def dfs(root_node, search_label):
@@ -128,14 +143,13 @@ class SequenceParser:
                 if x.label == search_label:
                     to_return.append(x.token)
                 else:
-                    to_return = to_return + SequenceParser.dfs_visit(x, search_label)
+                    to_return = to_return + \
+                        SequenceParser.dfs_visit(x, search_label)
         start_node.dfs_color = "black"
         return to_return
 
-
-
     @staticmethod
-    ## unclear if this method is achieving 100% recall of parse trees
+    # unclear if this method is achieving 100% recall of parse trees
     def discretize_nativity(root_node):
         if root_node.label == Tags.Thematic.SUBJ_NATIVEOF:
             record = {
@@ -149,12 +163,13 @@ class SequenceParser:
             return [record]
 
     @staticmethod
-    ## this method is NOT reading parse trees with 100% recall (see records[1174])
+    # this method is NOT reading parse trees with 100% recall (see
+    # records[1174])
     def discretize_emigration(root_node):
         if root_node.label == Tags.Thematic.SUBJ_EMIGRATION:
             record = {
-                "date" : {},
-                "vessel" : {}
+                "date": {},
+                "vessel": {}
             }
             for child in root_node.children:
                 if child.label == Rules.EMIGRATION_START:
@@ -180,22 +195,20 @@ class SequenceParser:
                                         record['vessel']['origin'] = greatgrandchild.token
             return [record]
 
-
-
-
     @staticmethod
-    ## this method is NOT reading parse trees with 100% recall (see records[1174])
+    # this method is NOT reading parse trees with 100% recall (see
+    # records[1174])
     def discretize_parents(root_node):
         if root_node.label == Tags.Thematic.FAM_PARENTS:
             collection = []
             for child in root_node.children:
                 SequenceParser.find_parent(child, collection)
-            ## merg
+            # merg
             both = []
             consolidated = []
             for parent in collection:
                 if parent['type'] == "BOTH":
-                    for k,v in parent.items():
+                    for k, v in parent.items():
                         if k != "type":
                             both.append({k: v})
             if len(both) > 0:
@@ -210,7 +223,7 @@ class SequenceParser:
 
     @staticmethod
     def find_parent(node, collection):
-        ## called on a parent_start node
+        # called on a parent_start node
         if node.label is Rules.PARENT_START:
             record = {}
             for child in node.children:
@@ -238,12 +251,11 @@ class SequenceParser:
                     SequenceParser.find_parent(child, collection)
             collection.append(record)
 
-
     @staticmethod
     def create_parse_tree(labeled_record):
-        stmt_lists, token_lists, remarks_lists = SequenceParser.split_lists_by_stmt_labels(labeled_record.statement_labels,
-                                                                                           labeled_record.token_labels,
-                                                                            [item[0] for item in labeled_record.remarks_labels])
+        stmt_lists, token_lists, remarks_lists = SequenceParser.split_lists_by_stmt_labels(
+            labeled_record.statement_labels, labeled_record.token_labels, [
+                item[0] for item in labeled_record.remarks_labels])
 
         record_root_node = ParseTree.TreeNode(labeled_record.row['Name'])
         for label_idx in range(len(stmt_lists)):
@@ -251,8 +263,8 @@ class SequenceParser:
             if label_tag in Rules.ignored_tags:
                 continue
             label_rules = Rules.get_rules_by_tag(label_tag)
-            label_root_node = SequenceParser.get_root_from_parse_tree(token_lists[label_idx], remarks_lists[label_idx], label_tag,
-                                                       label_rules)
+            label_root_node = SequenceParser.get_root_from_parse_tree(
+                token_lists[label_idx], remarks_lists[label_idx], label_tag, label_rules)
             record_root_node.children.append(label_root_node)
         return record_root_node
 
@@ -265,7 +277,8 @@ class SequenceParser:
             token = remarks[idx]
             nodes.append(ParseTree.TreeNode(token_tag, token))
         while True:
-            updated_tokens, updated_remarks, updated_nodes = Rules.parse_tree_by_label(rules, tokens, remarks, nodes)
+            updated_tokens, updated_remarks, updated_nodes = Rules.parse_tree_by_label(
+                rules, tokens, remarks, nodes)
             if len(updated_tokens) == len(tokens) and updated_tokens == tokens:
                 # add the rest of the unattached nodes to root
                 for node in nodes:
@@ -278,8 +291,8 @@ class SequenceParser:
 
     @staticmethod
     def split_lists_by_stmt_labels(stmt_labels, token_labels, remarks_labels):
-        if (len(stmt_labels) != len(token_labels) and len(token_labels) != len(remarks_labels)) or len(
-                stmt_labels) == 0:
+        if (len(stmt_labels) != len(token_labels) and len(token_labels)
+                != len(remarks_labels)) or len(stmt_labels) == 0:
             return None
         output_stmt_labels = []
         output_token_labels = []
@@ -294,7 +307,8 @@ class SequenceParser:
             if label != prev_label:
                 output_stmt_labels.append(stmt_labels[prev_label_idx:idx])
                 output_token_labels.append(token_labels[prev_label_idx:idx])
-                output_remarks_labels.append(remarks_labels[prev_label_idx:idx])
+                output_remarks_labels.append(
+                    remarks_labels[prev_label_idx:idx])
                 prev_label_idx = idx
                 prev_label = label
 
@@ -430,7 +444,8 @@ class SequenceParser:
                                 elif child_node.label == Tags.Token.PERSON_IS_LIVING:
                                     parent_status = "Alive"
 
-                        # Set parent_location variable when reached PARENT_LOCATION
+                        # Set parent_location variable when reached
+                        # PARENT_LOCATION
                         elif node.label == Rules.PARENT_LOCATION:
 
                             for location_child_node in node.children:
@@ -458,8 +473,8 @@ class SequenceParser:
             else:
                 parents_record.append(subtree_node.token)
 
-        if len(parents_record) == 0 and (parent_type is not None or parent_status is not None or
-                                                 parent_location is not None):
+        if len(parents_record) == 0 and (
+                parent_type is not None or parent_status is not None or parent_location is not None):
 
             parent = dict()
 
@@ -556,12 +571,6 @@ class SequenceParser:
                             emigration['vessel'] = emigration_vessel
                             emigration_record.append(emigration)
 
-            # else:
-            #     misc.append(subtree_node.token)
-            #
-            # if len(misc) > 0:
-            #     emigration_record.append(misc)
-
         return emigration_record
 
     @staticmethod
@@ -571,7 +580,6 @@ class SequenceParser:
 
         children_record = dict()
         children = []
-        # misc = []
 
         children_gender = None
 
@@ -604,7 +612,8 @@ class SequenceParser:
                         elif node.label == Tags.Token.PERSON_SON:
                             children_gender = "Male"
 
-                        # Append children_name into children_record when reached CHILDREN_NAME
+                        # Append children_name into children_record when
+                        # reached CHILDREN_NAME
                         elif node.label == Rules.CHILDREN_NAME:
                             child = dict()
 
@@ -630,16 +639,8 @@ class SequenceParser:
 
                             children.append(child)
 
-            # else:
-                # unknown tags
-                # for child_node in subtree_node.children:
-                #     misc.append(child_node.token)
-
         if len(children) > 0:
             children_record['children'] = children
-
-        # if len(misc) > 0:
-        #     children_record['misc'] = misc
 
         return children_record
 
@@ -720,7 +721,8 @@ class SequenceParser:
                                         elif duration_node.label == Tags.Token.TIME_DURATION_YEAR:
                                             duration_year = duration_node.token
 
-                                    spouse['duration'] = str(year) + str(duration_year)
+                                    spouse['duration'] = str(
+                                        year) + str(duration_year)
 
                                 elif child_node.label == Rules.SPOUSE_LOCATION:
 
@@ -813,7 +815,6 @@ class SequenceParser:
             return None
 
         age_record = dict()
-        # misc = []
 
         for subtree_node in subtree_root.children:
 
@@ -846,12 +847,6 @@ class SequenceParser:
                         elif node.label == Tags.Token.PERSON_AGE:
                             pass
 
-            # else:
-            #     misc.append(subtree_node.token)
-        #
-        # if len(misc) > 0:
-        #     age_record['misc'] = misc
-
         return age_record
 
     @staticmethod
@@ -862,7 +857,6 @@ class SequenceParser:
         bio_record = dict()
         time = None
         year = None
-        # misc = []
 
         for subtree_node in subtree_root.children:
 
@@ -905,12 +899,6 @@ class SequenceParser:
                         elif node.label == Tags.Token.LOCATION_NAME:
                             bio_record['location'] = node.token
 
-            # else:
-            #     misc.append(subtree_node.token)
-        #
-        # if len(misc) > 0:
-        #     bio_record['misc'] = misc
-
         if time is not None and year is not None:
             bio_record['duration'] = '{} {}'.format(str(time), str(year))
 
@@ -950,12 +938,6 @@ class SequenceParser:
                         # Set when PERSON_IS_SINGLE
                         elif node.label == Tags.Token.PERSON_IS_SINGLE:
                             martial_record['status'] = node.token
-
-            # else:
-            #     misc.append(subtree_node.token)
-        #
-        # if len(misc) > 0:
-        #     martial_record['misc'] = misc
 
         return martial_record
 
@@ -1019,14 +1001,9 @@ class SequenceParser:
                                 elif child_node.label == Tags.Token.LOCATION_NAME:
                                     distance_info['from'] = child_node.token
 
-                            distance_info['distance'] = '{} {}'.format(str(distance), str(distance_unit))
+                            distance_info['distance'] = '{} {}'.format(
+                                str(distance), str(distance_unit))
                             native_record['distance_from'] = distance_info
-
-            # else:
-            #     misc.append(subtree_node.token)
-        #
-        # if len(misc) > 0:
-        #     native_record['misc'] = misc
 
         return native_record
 
@@ -1073,12 +1050,6 @@ class SequenceParser:
                         elif node.label == Tags.Token.WORK_OCCUPATION:
                             occupation_record['occupation'] = node.token
 
-            # else:
-            #     misc.append(subtree_node.token)
-        #
-        # if len(misc) > 0:
-        #     occupation_record['misc'] = misc
-
         return occupation_record
 
     @staticmethod
@@ -1090,8 +1061,6 @@ class SequenceParser:
         reside_with = None
         reside_location = None
         reside_people = []
-
-        # misc = []
 
         for subtree_node in subtree_root.children:
 
@@ -1175,12 +1144,4 @@ class SequenceParser:
 
                             reside_people.append(person)
 
-            # else:
-            #     misc.append(subtree_node.token)
-        #
-        # if len(misc) > 0:
-        #     residence_record['misc'] = misc
-
         return residence_record
-
-

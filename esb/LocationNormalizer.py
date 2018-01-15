@@ -2,6 +2,7 @@ import requests
 import json
 import urllib
 
+
 class LocationNormalizer:
 
     def __init__(self, pelias_url="***REMOVED***"):
@@ -9,7 +10,8 @@ class LocationNormalizer:
 
     def find_candidates(self, search_string):
         cleaned_string = self.__first_pass(search_string)
-        query = self.pelias_url + "/search?" + urllib.parse.urlencode({"text" : cleaned_string})
+        query = self.pelias_url + "/search?" + \
+            urllib.parse.urlencode({"text": cleaned_string})
         r = requests.get(query).json()
         return r['features']
 
@@ -19,14 +21,12 @@ class LocationNormalizer:
             return resp
         else:
             tokens = search_string.split(" ")
-            for x in range(1,len(tokens)):
+            for x in range(1, len(tokens)):
                 phrase = " ".join(tokens[x:])
                 r2 = self.best_guess(phrase)
                 if r2['geocoding_match']:
                     return r2
             return resp
-
-
 
     def best_guess(self, search_string):
         candidates = self.find_candidates(search_string)

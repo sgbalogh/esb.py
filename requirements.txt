@@ -1,0 +1,3 @@
+nose
+sklearn-crfsuite
+***REMOVED***-driver
