@@ -15,7 +15,7 @@ This library provides tools for:
 2. Assigning token-level symbols to a remark text
 3. Extracting a machine-readable synthesis of named entities and named relations, with the goal of building a graph network
 
-Two conditional random field (CRF) models are training on labeled data to achieve the first two goals.
+Two conditional random field (CRF) models are trained on labeled data to achieve the first two goals.
 
 Extracting a machine-readable synthesis from CRF-predicted label sequences is done using formal context-free grammar parsing, and by subsequently interpreting the resulting parse-tree.
 
