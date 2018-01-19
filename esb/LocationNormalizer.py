@@ -5,7 +5,7 @@ import urllib
 
 class LocationNormalizer:
 
-    def __init__(self, pelias_url="***REMOVED***"):
+    def __init__(self, pelias_url="https://pelias-instance"):
         self.pelias_url = pelias_url
 
     def find_candidates(self, search_string):

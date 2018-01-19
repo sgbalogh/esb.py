@@ -1,13 +1,13 @@
-from ***REMOVED***.v1 import GraphDatabase
+from neo4j.v1 import GraphDatabase
 
 
 class GraphWriter:
     def __init__(self):
         self._driver = GraphDatabase.driver(
-            "***REMOVED***",
+            "host",
             auth=(
-                "***REMOVED***",
-                "***REMOVED***"))
+                "user",
+                "password"))
 
     def close(self):
         self._driver.close()

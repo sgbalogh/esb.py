@@ -1,3 +1,3 @@
 nose
 sklearn-crfsuite
-***REMOVED***-driver
+neo4j-driver
