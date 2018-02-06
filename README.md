@@ -1,4 +1,5 @@
 # esb.py
+[![Build Status](https://travis-ci.org/sgbalogh/esb.py.svg?branch=master)](https://travis-ci.org/sgbalogh/esb.py)
 
 A Python-based set of tools, models, and training data for extracting structured claims from natural language found in historical account data from New York City's [Emigrant Savings Bank](https://en.wikipedia.org/wiki/Emigrant_Savings_Bank). Allows users to turn the corpus into a queryable graph network.
 

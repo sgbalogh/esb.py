@@ -1,3 +1,4 @@
 nose
 sklearn-crfsuite
 neo4j-driver
+requests
